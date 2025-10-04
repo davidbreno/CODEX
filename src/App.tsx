@@ -1,3 +1,10 @@
+ codex/create-dashboardlayout-components-and-routing
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+
+function App() {
+  return <RouterProvider router={router} />;
+
 import { CalendarIcon, LineChartIcon } from './components/Icons';
 import { useMemo } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
@@ -93,6 +100,7 @@ function App() {
       </main>
     </div>
   );
+ dev
 }
 
 export default App;

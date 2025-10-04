@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 :root {
+ codex/create-dashboardlayout-components-and-routing
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+
   --color-background: #0f172a;
   --color-surface: #16213e;
   --color-primary: #38bdf8;
@@ -38,4 +49,5 @@ body {
     font-family: var(--font-heading);
     color: var(--color-primary);
   }
+ dev
 }

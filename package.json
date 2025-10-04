@@ -1,4 +1,30 @@
 {
+ codex/create-dashboardlayout-components-and-routing
+  "name": "codex-dashboard",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "classnames": "^2.5.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+
   "name": "finance",
   "version": "0.0.0",
   "private": true,
@@ -36,5 +62,6 @@
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.1",
     "vite": "^5.2.11"
+ dev
   }
 }

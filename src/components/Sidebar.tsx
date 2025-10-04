@@ -3,6 +3,12 @@ import clsx from 'classnames';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/entrada', label: 'Income' },
+  { to: '/saida', label: 'Expenses' },
+  { to: '/bills', label: 'Bills' },
+  { to: '/pie', label: 'Spending Breakdown' },
+  { to: '/temas', label: 'Themes' },
+  { to: '/configuracoes', label: 'Settings' }
   { to: '/dashboard/entrada', label: 'Entrada' },
   { to: '/dashboard/saida', label: 'Saída' },
   { to: '/dashboard/bills', label: 'Contas a pagar' },

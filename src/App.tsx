@@ -1,219 +1,639 @@
- codex/implement-usetheme-hook-and-context
-import { ThemeToggle } from './components/ThemeToggle';
-import { BarChart } from './charts/BarChart';
-import { TrendSparkline } from './charts/TrendSparkline';
-import { useTheme } from './theme';
+import { CSSProperties, FormEvent, useMemo, useState } from 'react';
+import './index.css';
 
-const revenueData = [
-  { label: 'Q1', value: 18, goal: 15 },
-  { label: 'Q2', value: 24, goal: 22 },
-  { label: 'Q3', value: 31, goal: 28 },
-  { label: 'Q4', value: 27, goal: 30 }
-];
+type ThemeKey = 'noite' | 'aurora' | 'oceano';
 
-const satisfactionData = [
-  { label: 'Onboarding', value: 92 },
-  { label: 'Suporte', value: 87 },
-  { label: 'NPS', value: 74 },
-  { label: 'Retenção', value: 68 }
-];
+type TransactionType = 'entrada' | 'saida';
 
-const pulseData = [62, 64, 66, 71, 73, 75, 78, 80, 83, 86, 88, 91];
-const churnData = [9, 8, 8, 7, 6.5, 6.2, 5.8, 5.4, 5.2, 4.9, 4.6, 4.3];
+type BillStatus = 'pagar' | 'pagas' | 'vencer';
 
-const menuItems = ['Visão geral', 'Clientes', 'Produtos', 'Relatórios', 'Configurações'];
+interface Transaction {
+  id: number;
+  categoria: string;
+  valor: number;
+  data: string;
+  tipo: TransactionType;
+}
 
-const App = () => {
-  const { theme } = useTheme();
+interface Bill {
+  id: number;
+  titulo: string;
+  valor: number;
+  vencimento: string;
+  status: BillStatus;
+}
 
-  return (
-    <div className="flex min-h-screen bg-background text-text">
-      <aside className="hidden w-64 flex-col border-r border-border bg-surface px-6 py-8 md:flex">
-        <div className="flex items-center justify-between">
-          <span className="text-lg font-semibold text-accent-strong">CODEX</span>
-          <span className="rounded-full bg-accent-soft px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent-strong">
-            {theme}
-          </span>
-        </div>
-        <nav className="mt-10 space-y-1 text-sm">
-          {menuItems.map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="block rounded-xl px-4 py-2 font-medium text-text-muted transition-colors hover:bg-surface-hover hover:text-text"
-            >
-              {item}
-            </a>
-          ))}
-        </nav>
-        <div className="mt-auto rounded-2xl border border-dashed border-border bg-surface p-4 text-xs text-text-muted">
-          <p className="font-semibold text-text">Produtividade</p>
-          <p className="mt-1 leading-relaxed">
-            Utilize o modo {theme === 'dark' ? 'escuro' : 'claro'} para reduzir fadiga
-            ocular e manter o foco em análises prolongadas.
-          </p>
-        </div>
-      </aside>
-
-      <main className="flex-1 bg-background">
-        <header className="sticky top-0 z-10 border-b border-border bg-surface backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-            <div>
-              <h1 className="text-2xl font-semibold text-text">Painel de desempenho</h1>
-              <p className="text-sm text-text-muted">Monitoramento em tempo real dos indicadores de negócio.</p>
-            </div>
-            <ThemeToggle />
-          </div>
-        </header>
-
-        <section className="mx-auto grid max-w-6xl gap-6 px-6 py-10 lg:grid-cols-[1.2fr_1fr]">
-          <div className="space-y-6">
-            <TrendSparkline
-              title="Receita recorrente"
-              data={pulseData}
-              caption="Últimos 12 meses"
-              accent="positive"
-            />
-            <BarChart title="Performance trimestral" data={revenueData} metricSuffix="%" />
-          </div>
-
-          <div className="space-y-6">
-            <TrendSparkline
-              title="Rotatividade de clientes"
-              data={churnData}
-              caption="Churn (%)"
-              accent="negative"
-            />
-            <BarChart title="Satisfação do cliente" data={satisfactionData} metricSuffix="%" />
-          </div>
-
- codex/create-kpi-cards-with-recharts
-import Dashboard from './components/dashboard/Dashboard';
-
-function App() {
-  return (
-    <div className="min-h-screen bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(15,118,110,0.25),_transparent_55%)]">
-      <main className="mx-auto max-w-7xl px-6 pb-16 pt-10">
-        <header className="mb-10 flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold text-white sm:text-4xl">Visão geral financeira</h1>
-          <p className="max-w-2xl text-sm text-slate-300 sm:text-base">
-            Acompanhe resultados, metas e eventos financeiros com cartões dinâmicos alimentados pela store centralizada.
-          </p>
-        </header>
-        <Dashboard />
-      </main>
-    </div>
-  );
-
- codex/create-dashboardlayout-components-and-routing
-import { RouterProvider } from 'react-router-dom';
-import { router } from './router';
-
-function App() {
-  return <RouterProvider router={router} />;
-
-import { CalendarIcon, LineChartIcon } from './components/Icons';
-import { useMemo } from 'react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import dayjs from 'dayjs';
-import utc from 'dayjs-plugin-utc';
-import shallow from 'zustand/shallow';
-import { useFinanceStore } from './stores/financeStore';
-import './App.css';
-
-dayjs.extend(utc);
-
-const chartData = [
-  { month: 'Jan', revenue: 4200 },
-  { month: 'Fev', revenue: 5800 },
-  { month: 'Mar', revenue: 6100 },
-  { month: 'Abr', revenue: 7200 },
-  { month: 'Mai', revenue: 6900 },
-  { month: 'Jun', revenue: 7600 }
-];
-
-function App() {
-  const { events } = useFinanceStore((state) => ({ events: state.events }), shallow);
-
-  const calendarEvents = useMemo(
-    () =>
-      events.map((event) => ({
-        ...event,
-        start: dayjs.utc(event.start).format('YYYY-MM-DD'),
-        end: dayjs.utc(event.end).format('YYYY-MM-DD')
-      })),
-    [events]
-  );
-
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-surface/60 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-          <div>
-            <p className="text-sm uppercase tracking-wide text-muted">Dashboard Financeiro</p>
-            <h1 className="text-3xl font-bold text-primary">Visão Geral</h1>
-          </div>
-          <div className="flex gap-4">
-            <button className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-card transition hover:brightness-110">
-              <LineChartIcon className="h-4 w-4" /> Relatórios
-            </button>
-            <button className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-muted transition hover:border-primary hover:text-primary">
-              <CalendarIcon className="h-4 w-4" /> Calendário
-            </button>
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto grid max-w-5xl gap-8 px-6 py-10 lg:grid-cols-2">
-        <section className="rounded-lg border border-border bg-surface/80 p-6 shadow-card">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-primary">Receitas</h2>
-            <span className="text-sm text-muted">Últimos 6 meses</span>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.2)" />
-                <XAxis dataKey="month" stroke="var(--color-muted)" tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--color-muted)" tickLine={false} axisLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'var(--color-surface)',
-                    borderColor: 'var(--color-border)',
-                    color: 'var(--color-muted)'
-                  }}
-                />
-                <Line type="monotone" dataKey="revenue" stroke="var(--color-primary)" strokeWidth={3} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-        <section className="rounded-lg border border-border bg-surface/80 p-6 shadow-card">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-primary">Agenda</h2>
-            <span className="text-sm text-muted">Próximos eventos</span>
-          </div>
-          <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            events={calendarEvents}
-            height="100%"
-            headerToolbar={{ left: 'prev,next today', center: 'title', right: '' }}
-            buttonText={{ today: 'Hoje' }}
-          />
- dev
-        </section>
-      </main>
-    </div>
-  );
- codex/implement-usetheme-hook-and-context
+const themePresets: Record<ThemeKey, CSSProperties> = {
+  noite: {
+    '--bg': '#050617',
+    '--bg-gradient': 'radial-gradient(circle at top, rgba(91, 33, 182, 0.45), transparent 55%)',
+    '--surface': 'rgba(15, 23, 42, 0.65)',
+    '--surface-strong': 'rgba(30, 41, 59, 0.85)',
+    '--surface-dim': 'rgba(15, 23, 42, 0.45)',
+    '--border': 'rgba(148, 163, 184, 0.28)',
+    '--fg': '#f8fafc',
+    '--muted': '#cbd5f5',
+    '--accent': '#60a5fa',
+    '--accent-soft': 'rgba(96, 165, 250, 0.16)',
+    '--accent-strong': '#3b82f6',
+    '--outline': 'rgba(96, 165, 250, 0.35)',
+    '--shadow': '0 24px 65px rgba(15, 23, 42, 0.55)',
+    '--chart-1': '#34d399',
+    '--chart-2': '#60a5fa',
+    '--chart-3': '#f59e0b'
+  },
+  aurora: {
+    '--bg': '#0b0d19',
+    '--bg-gradient': 'radial-gradient(circle at 20% 20%, rgba(236, 72, 153, 0.4), transparent 60%), radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.35), transparent 55%)',
+    '--surface': 'rgba(17, 25, 40, 0.75)',
+    '--surface-strong': 'rgba(31, 41, 55, 0.88)',
+    '--surface-dim': 'rgba(17, 24, 39, 0.55)',
+    '--border': 'rgba(244, 114, 182, 0.35)',
+    '--fg': '#fdf2f8',
+    '--muted': '#fbcfe8',
+    '--accent': '#fb7185',
+    '--accent-soft': 'rgba(248, 113, 113, 0.16)',
+    '--accent-strong': '#f472b6',
+    '--outline': 'rgba(251, 113, 133, 0.36)',
+    '--shadow': '0 28px 70px rgba(76, 29, 149, 0.5)',
+    '--chart-1': '#f472b6',
+    '--chart-2': '#38bdf8',
+    '--chart-3': '#facc15'
+  },
+  oceano: {
+    '--bg': '#04161f',
+    '--bg-gradient': 'radial-gradient(circle at top, rgba(14, 165, 233, 0.45), transparent 60%), radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.35), transparent 45%)',
+    '--surface': 'rgba(8, 47, 73, 0.7)',
+    '--surface-strong': 'rgba(13, 64, 103, 0.9)',
+    '--surface-dim': 'rgba(8, 47, 73, 0.55)',
+    '--border': 'rgba(45, 212, 191, 0.28)',
+    '--fg': '#ecfeff',
+    '--muted': '#bae6fd',
+    '--accent': '#2dd4bf',
+    '--accent-soft': 'rgba(45, 212, 191, 0.18)',
+    '--accent-strong': '#0ea5e9',
+    '--outline': 'rgba(45, 212, 191, 0.35)',
+    '--shadow': '0 24px 60px rgba(8, 47, 73, 0.55)',
+    '--chart-1': '#2dd4bf',
+    '--chart-2': '#0ea5e9',
+    '--chart-3': '#f97316'
+  }
 };
 
- dev
- dev
+const themeLabels: Record<ThemeKey, string> = {
+  noite: 'Noite Profunda',
+  aurora: 'Aurora Digital',
+  oceano: 'Brisa do Oceano'
+};
+
+const initialTransactions: Transaction[] = [
+  { id: 1, categoria: 'Consultoria', valor: 4200, data: '2024-06-05', tipo: 'entrada' },
+  { id: 2, categoria: 'Cursos Online', valor: 2800, data: '2024-06-11', tipo: 'entrada' },
+  { id: 3, categoria: 'Software', valor: 950, data: '2024-06-07', tipo: 'saida' },
+  { id: 4, categoria: 'Marketing', valor: 1200, data: '2024-06-10', tipo: 'saida' },
+  { id: 5, categoria: 'Mentorias', valor: 1800, data: '2024-06-14', tipo: 'entrada' }
+];
+
+const initialBills: Bill[] = [
+  { id: 1, titulo: 'Aluguel Escritório', valor: 3200, vencimento: '2024-06-20', status: 'pagar' },
+  { id: 2, titulo: 'Serviços em Nuvem', valor: 780, vencimento: '2024-06-15', status: 'pagar' },
+  { id: 3, titulo: 'Equipe Freelancer', valor: 2100, vencimento: '2024-06-08', status: 'pagas' },
+  { id: 4, titulo: 'Impostos Trimestrais', valor: 5400, vencimento: '2024-07-05', status: 'vencer' },
+  { id: 5, titulo: 'Energia', valor: 480, vencimento: '2024-06-12', status: 'pagas' }
+];
+
+const fluxoMensal = [21500, 23800, 25400, 24750, 26300, 27840];
+const fluxoLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
+
+const formatCurrency = (value: number) =>
+  value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+
+const formatDate = (isoDate: string) =>
+  new Date(isoDate + 'T00:00:00').toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short'
+  });
+
+const AuthScreen = ({
+  mode,
+  onSwitch,
+  onSuccess
+}: {
+  mode: 'login' | 'register';
+  onSwitch: (next: 'login' | 'register') => void;
+  onSuccess: () => void;
+}) => {
+  const title = mode === 'login' ? 'Acesse o Financ David' : 'Crie sua conta no Financ David';
+  const subtitle =
+    mode === 'login'
+      ? 'Centralize entradas, saídas e contas em um único painel visual.'
+      : 'Organize suas finanças e acompanhe resultados com gráficos intuitivos.';
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onSuccess();
+  };
+
+  return (
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <span className="brand-mark">FD</span>
+          <div>
+            <p className="brand-name">Financ David</p>
+            <p className="brand-motto">Sua central de performance financeira</p>
+          </div>
+        </div>
+        <h1>{title}</h1>
+        <p className="auth-subtitle">{subtitle}</p>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {mode === 'register' && (
+            <label>
+              Nome completo
+              <input placeholder="Informe como deseja ser chamado" required />
+            </label>
+          )}
+          <label>
+            E-mail corporativo
+            <input type="email" placeholder="voce@empresa.com" required />
+          </label>
+          <label>
+            Senha segura
+            <input type="password" placeholder="Mínimo 8 caracteres" required />
+          </label>
+          {mode === 'register' && (
+            <label>
+              Confirme a senha
+              <input type="password" placeholder="Repita a senha" required />
+            </label>
+          )}
+          <button type="submit" className="primary-button">
+            {mode === 'login' ? 'Entrar no painel' : 'Criar conta gratuita'}
+          </button>
+        </form>
+        <button className="ghost-button" onClick={() => onSwitch(mode === 'login' ? 'register' : 'login')}>
+          {mode === 'login' ? 'Ainda não tem conta? Criar usuário' : 'Já possui acesso? Fazer login'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  const [theme, setTheme] = useState<ThemeKey>('noite');
+  const [stage, setStage] = useState<'login' | 'register' | 'dashboard'>('login');
+  const [transactions, setTransactions] = useState(initialTransactions);
+  const [bills, setBills] = useState(initialBills);
+  const [activePanel, setActivePanel] = useState<'entrada' | 'saida' | 'pagar' | 'pagas' | 'vencer'>('entrada');
+  const [entradaForm, setEntradaForm] = useState({ categoria: '', valor: '' });
+  const [saidaForm, setSaidaForm] = useState({ categoria: '', valor: '' });
+
+  const totalEntradas = useMemo(
+    () => transactions.filter((item) => item.tipo === 'entrada').reduce((acc, item) => acc + item.valor, 0),
+    [transactions]
+  );
+
+  const totalSaidas = useMemo(
+    () => transactions.filter((item) => item.tipo === 'saida').reduce((acc, item) => acc + item.valor, 0),
+    [transactions]
+  );
+
+  const saldoAtual = totalEntradas - totalSaidas;
+
+  const contasResumo = useMemo(() => {
+    const pagar = bills.filter((bill) => bill.status === 'pagar');
+    const pagas = bills.filter((bill) => bill.status === 'pagas');
+    const vencer = bills.filter((bill) => bill.status === 'vencer');
+    return { pagar, pagas, vencer };
+  }, [bills]);
+
+  const pizzaStyle = useMemo(() => {
+    const total = totalEntradas + totalSaidas;
+    if (total === 0) {
+      return { background: `conic-gradient(var(--chart-2) 0 50%, var(--chart-1) 50% 100%)` };
+    }
+    const entradaPercent = Math.round((totalEntradas / total) * 100);
+    const saidaPercent = 100 - entradaPercent;
+    return {
+      background: `conic-gradient(var(--chart-1) 0 ${entradaPercent}%, var(--chart-2) ${entradaPercent}% ${entradaPercent + saidaPercent}%)`
+    };
+  }, [totalEntradas, totalSaidas]);
+
+  const linePoints = useMemo(() => {
+    const max = Math.max(...fluxoMensal);
+    const min = Math.min(...fluxoMensal);
+    const normalize = (value: number) => ((value - min) / (max - min || 1)) * 90 + 5;
+    return fluxoMensal.map((value, index) => `${(index / (fluxoMensal.length - 1)) * 100},${100 - normalize(value)}`).join(' ');
+  }, []);
+
+  const handleAddTransaction = (tipo: TransactionType) => (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = tipo === 'entrada' ? entradaForm : saidaForm;
+    const valor = Number(form.valor.replace(',', '.'));
+    if (!form.categoria || Number.isNaN(valor) || valor <= 0) {
+      return;
+    }
+
+    const novaTransacao: Transaction = {
+      id: Date.now(),
+      categoria: form.categoria,
+      valor,
+      data: new Date().toISOString().slice(0, 10),
+      tipo
+    };
+
+    setTransactions((prev) => [novaTransacao, ...prev]);
+    if (tipo === 'entrada') {
+      setEntradaForm({ categoria: '', valor: '' });
+    } else {
+      setSaidaForm({ categoria: '', valor: '' });
+    }
+  };
+
+  const handleMarkAsPaid = (id: number) => {
+    setBills((previous) =>
+      previous.map((bill) => (bill.id === id ? { ...bill, status: 'pagas' as BillStatus } : bill))
+    );
+  };
+
+  const filteredBills = useMemo(() => {
+    if (activePanel === 'entrada' || activePanel === 'saida') {
+      return [] as Bill[];
+    }
+    return bills.filter((bill) => bill.status === activePanel);
+  }, [activePanel, bills]);
+
+  const renderActivePanel = () => {
+    if (activePanel === 'entrada') {
+      return (
+        <form className="panel-form" onSubmit={handleAddTransaction('entrada')}>
+          <h3>Registrar nova entrada</h3>
+          <p>Atualize seu fluxo com valores recebidos de vendas, consultorias ou assinaturas.</p>
+          <label>
+            Categoria
+            <input
+              placeholder="Ex.: Consultoria premium"
+              value={entradaForm.categoria}
+              onChange={(event) => setEntradaForm((prev) => ({ ...prev, categoria: event.target.value }))}
+            />
+          </label>
+          <label>
+            Valor (R$)
+            <input
+              inputMode="decimal"
+              placeholder="Ex.: 1500"
+              value={entradaForm.valor}
+              onChange={(event) => setEntradaForm((prev) => ({ ...prev, valor: event.target.value }))}
+            />
+          </label>
+          <button type="submit" className="primary-button">
+            Registrar entrada
+          </button>
+        </form>
+      );
+    }
+
+    if (activePanel === 'saida') {
+      return (
+        <form className="panel-form" onSubmit={handleAddTransaction('saida')}>
+          <h3>Cadastrar nova saída</h3>
+          <p>Controle despesas fixas e investimentos para manter o caixa saudável.</p>
+          <label>
+            Categoria
+            <input
+              placeholder="Ex.: Ferramentas SaaS"
+              value={saidaForm.categoria}
+              onChange={(event) => setSaidaForm((prev) => ({ ...prev, categoria: event.target.value }))}
+            />
+          </label>
+          <label>
+            Valor (R$)
+            <input
+              inputMode="decimal"
+              placeholder="Ex.: 890"
+              value={saidaForm.valor}
+              onChange={(event) => setSaidaForm((prev) => ({ ...prev, valor: event.target.value }))}
+            />
+          </label>
+          <button type="submit" className="primary-button">
+            Registrar saída
+          </button>
+        </form>
+      );
+    }
+
+    return (
+      <div className="panel-list">
+        <h3>
+          {activePanel === 'pagar'
+            ? 'Contas a pagar'
+            : activePanel === 'pagas'
+            ? 'Contas pagas recentemente'
+            : 'Contas a vencer'}
+        </h3>
+        <p>
+          {activePanel === 'pagar'
+            ? 'Visualize contas pendentes e mantenha o planejamento em dia.'
+            : activePanel === 'pagas'
+            ? 'Parabéns! Estes compromissos já foram liquidados com sucesso.'
+            : 'Antecipe valores que vencem em breve e evite surpresas no caixa.'}
+        </p>
+        <ul>
+          {filteredBills.map((bill) => (
+            <li key={bill.id}>
+              <div>
+                <strong>{bill.titulo}</strong>
+                <span>{formatCurrency(bill.valor)}</span>
+              </div>
+              <div className="bill-meta">
+                <span>Vencimento: {formatDate(bill.vencimento)}</span>
+                {bill.status === 'pagar' && (
+                  <button className="mini-button" onClick={() => handleMarkAsPaid(bill.id)} type="button">
+                    Marcar como paga
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+          {filteredBills.length === 0 && <li className="empty">Nada por aqui. Aproveite para revisar seu planejamento.</li>}
+        </ul>
+      </div>
+    );
+  };
+
+  const actionButtons: { key: typeof activePanel; title: string; description: string }[] = [
+    { key: 'entrada', title: 'Entrada de valores', description: 'Adicione receitas recorrentes, vendas avulsas ou outros ganhos.' },
+    { key: 'saida', title: 'Saída de valores', description: 'Lance despesas operacionais e investimentos estratégicos.' },
+    { key: 'pagar', title: 'Contas a pagar', description: 'Antecipe quais pagamentos exigem atenção imediata.' },
+    { key: 'pagas', title: 'Contas pagas', description: 'Acompanhe compromissos já quitados neste ciclo.' },
+    { key: 'vencer', title: 'Contas a vencer', description: 'Planeje-se com base nos próximos vencimentos confirmados.' }
+  ];
+
+  return (
+    <div className="app" style={themePresets[theme]}>
+      <div className="app-glow" />
+      {stage !== 'dashboard' ? (
+        <AuthScreen mode={stage} onSwitch={setStage} onSuccess={() => setStage('dashboard')} />
+      ) : (
+        <div className="dashboard">
+          <aside className="sidebar">
+            <div className="sidebar-brand">
+              <div className="brand-icon">FD</div>
+              <div>
+                <p className="brand-title">Financ David</p>
+                <p className="brand-caption">Gestão financeira inteligente</p>
+              </div>
+            </div>
+            <nav>
+              <a className="active" href="#visao">
+                Visão geral
+              </a>
+              <a href="#fluxo">Fluxo de caixa</a>
+              <a href="#relatorios">Relatórios</a>
+              <a href="#metas">Metas e OKRs</a>
+              <a href="#config">Configurações</a>
+            </nav>
+            <div className="sidebar-footer">
+              <p>Temas dinâmicos</p>
+              <div className="theme-options">
+                {(Object.keys(themePresets) as ThemeKey[]).map((key) => {
+                  const accentColor = themePresets[key]['--accent'] as string | undefined;
+                  const accentStrong = themePresets[key]['--accent-strong'] as string | undefined;
+                  return (
+                    <button
+                      key={key}
+                      className={key === theme ? 'theme-dot active' : 'theme-dot'}
+                      onClick={() => setTheme(key)}
+                      style={{
+                        background: accentColor,
+                        borderColor: key === theme ? accentStrong : 'transparent'
+                      }}
+                      aria-label={`Ativar tema ${themeLabels[key]}`}
+                    >
+                      <span>{themeLabels[key]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button className="ghost-button" onClick={() => setStage('login')}>
+                Sair do painel
+              </button>
+            </div>
+          </aside>
+          <main className="content" id="visao">
+            <header className="content-header">
+              <div>
+                <h1>Bem-vindo(a), David!</h1>
+                <p>Mantenha seu ecossistema financeiro sob controle com indicadores em tempo real.</p>
+              </div>
+              <div className="header-actions">
+                <div className="search-box">
+                  <input placeholder="Pesquisar lançamentos, contas e relatórios" />
+                </div>
+                <div className="theme-switcher">
+                  {(Object.keys(themePresets) as ThemeKey[]).map((key) => (
+                    <button
+                      key={key}
+                      className={key === theme ? 'switcher-item active' : 'switcher-item'}
+                      onClick={() => setTheme(key)}
+                    >
+                      {themeLabels[key]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </header>
+
+            <section className="summary-grid">
+              <article className="summary-card">
+                <header>
+                  <span>Saldo atual</span>
+                  <span className="tag success">+12,4% este mês</span>
+                </header>
+                <strong>{formatCurrency(saldoAtual)}</strong>
+                <footer>
+                  <div className="progress">
+                    <div className="progress-value" style={{ width: `${Math.min(100, (saldoAtual / 30000) * 100)}%` }} />
+                  </div>
+                  <span>Meta mensal: {formatCurrency(30000)}</span>
+                </footer>
+              </article>
+              <article className="summary-card">
+                <header>
+                  <span>Entradas do mês</span>
+                  <span className="tag info">{transactions.filter((t) => t.tipo === 'entrada').length} lançamentos</span>
+                </header>
+                <strong>{formatCurrency(totalEntradas)}</strong>
+                <footer>Principais fontes: Consultoria, Mentorias, Cursos</footer>
+              </article>
+              <article className="summary-card">
+                <header>
+                  <span>Saídas do mês</span>
+                  <span className="tag warning">Controle as despesas</span>
+                </header>
+                <strong>{formatCurrency(totalSaidas)}</strong>
+                <footer>Investimentos em tecnologia e marketing</footer>
+              </article>
+              <article className="summary-card">
+                <header>
+                  <span>Contas monitoradas</span>
+                  <span className="tag neutral">Atualizado agora</span>
+                </header>
+                <strong>{contasResumo.pagar.length + contasResumo.pagas.length + contasResumo.vencer.length}</strong>
+                <footer>
+                  {contasResumo.pagar.length} a pagar · {contasResumo.vencer.length} a vencer · {contasResumo.pagas.length} pagas
+                </footer>
+              </article>
+            </section>
+
+            <section className="charts-grid" id="fluxo">
+              <article className="chart-card">
+                <header>
+                  <div>
+                    <h2>Fluxo mensal consolidado</h2>
+                    <p>Comparativo dos últimos seis meses com destaque para tendência de crescimento.</p>
+                  </div>
+                  <span className="tag outline">Atualizado há 5 min</span>
+                </header>
+                <div className="line-chart">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="lineGradient" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="var(--chart-2)" stopOpacity="0.85" />
+                        <stop offset="100%" stopColor="var(--chart-2)" stopOpacity="0.05" />
+                      </linearGradient>
+                    </defs>
+                    <polyline fill="url(#lineGradient)" stroke="var(--chart-2)" strokeWidth="1.5" points={`0,100 ${linePoints} 100,100`} />
+                    <polyline fill="none" stroke="var(--chart-1)" strokeWidth="1.5" points={linePoints} />
+                  </svg>
+                </div>
+                <div className="chart-legend">
+                  {fluxoLabels.map((label, index) => (
+                    <div key={label}>
+                      <span>{label}</span>
+                      <strong>{formatCurrency(fluxoMensal[index])}</strong>
+                    </div>
+                  ))}
+                </div>
+              </article>
+              <article className="chart-card pizza-card">
+                <header>
+                  <div>
+                    <h2>Distribuição de entradas x saídas</h2>
+                    <p>Veja rapidamente como o caixa está equilibrado neste ciclo.</p>
+                  </div>
+                </header>
+                <div className="pizza-wrapper">
+                  <div className="pizza" style={pizzaStyle}>
+                    <div className="pizza-center">
+                      <span>Total</span>
+                      <strong>{formatCurrency(totalEntradas + totalSaidas)}</strong>
+                    </div>
+                  </div>
+                  <ul className="pizza-legend">
+                    <li>
+                      <span className="dot" style={{ background: 'var(--chart-1)' }} />
+                      <div>
+                        <p>Entradas</p>
+                        <strong>{formatCurrency(totalEntradas)}</strong>
+                      </div>
+                    </li>
+                    <li>
+                      <span className="dot" style={{ background: 'var(--chart-2)' }} />
+                      <div>
+                        <p>Saídas</p>
+                        <strong>{formatCurrency(totalSaidas)}</strong>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </article>
+            </section>
+
+            <section className="actions-section" id="relatorios">
+              <div className="actions-buttons">
+                {actionButtons.map((action) => (
+                  <button
+                    key={action.key}
+                    className={action.key === activePanel ? 'action-button active' : 'action-button'}
+                    onClick={() => setActivePanel(action.key)}
+                  >
+                    <strong>{action.title}</strong>
+                    <span>{action.description}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="actions-panel">{renderActivePanel()}</div>
+            </section>
+
+            <section className="recent-section" id="metas">
+              <article className="recent-card">
+                <header>
+                  <h2>Movimentações recentes</h2>
+                  <span className="tag outline">{transactions.length} registros</span>
+                </header>
+                <ul>
+                  {transactions.slice(0, 6).map((transaction) => (
+                    <li key={transaction.id}>
+                      <div>
+                        <strong>{transaction.categoria}</strong>
+                        <span>{formatDate(transaction.data)}</span>
+                      </div>
+                      <span className={transaction.tipo === 'entrada' ? 'value in' : 'value out'}>
+                        {transaction.tipo === 'entrada' ? '+' : '-'}
+                        {formatCurrency(transaction.valor)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+              <article className="recent-card">
+                <header>
+                  <h2>Planos e metas</h2>
+                  <span className="tag neutral">Foco trimestral</span>
+                </header>
+                <ul className="goals-list">
+                  <li>
+                    <div>
+                      <strong>Expandir faturamento recorrente</strong>
+                      <p>Adicionar 15 novos clientes de consultoria premium.</p>
+                    </div>
+                    <div className="goal-progress">
+                      <div className="goal-bar" style={{ width: '68%' }} />
+                      <span>68% concluído</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div>
+                      <strong>Reduzir inadimplência</strong>
+                      <p>Automatizar cobranças e negociar antecipadamente.</p>
+                    </div>
+                    <div className="goal-progress">
+                      <div className="goal-bar" style={{ width: '45%' }} />
+                      <span>45% concluído</span>
+                    </div>
+                  </li>
+                  <li>
+                    <div>
+                      <strong>Reservar caixa para investimentos</strong>
+                      <p>Acumular R$ 40.000 para expansão de equipe.</p>
+                    </div>
+                    <div className="goal-progress">
+                      <div className="goal-bar" style={{ width: '54%' }} />
+                      <span>54% concluído</span>
+                    </div>
+                  </li>
+                </ul>
+              </article>
+            </section>
+          </main>
+        </div>
+      )}
+    </div>
+  );
 }
- dev
 
 export default App;

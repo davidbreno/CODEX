@@ -1,4 +1,11 @@
 {
+ codex/implement-usetheme-hook-and-context
+
+ codex/create-kpi-cards-with-recharts
+
+ codex/create-dashboardlayout-components-and-routing
+ dev
+ dev
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",
@@ -6,4 +13,24 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["vite.config.ts"]
+ codex/implement-usetheme-hook-and-context
+
+ codex/create-kpi-cards-with-recharts
+
+
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["node"]
+  },
+  "include": ["vite.config.ts", "tsconfig.node.json"]
+ dev
+ dev
+ dev
 }

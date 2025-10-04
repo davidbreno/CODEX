@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+ codex/implement-usetheme-hook-and-context
 :root {
   color-scheme: light;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -71,4 +72,93 @@ body {
 
 .dark ::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.3);
+
+ codex/create-kpi-cards-with-recharts
+@import '@fullcalendar/common/main.css';
+@import '@fullcalendar/daygrid/main.css';
+@import '@fullcalendar/timegrid/main.css';
+
+:root {
+
+:root {
+ codex/create-dashboardlayout-components-and-routing
+ dev
+  color-scheme: dark;
+}
+
+body {
+ codex/create-kpi-cards-with-recharts
+  @apply min-h-screen bg-slate-950 text-slate-100 font-display antialiased;
+}
+
+.shadow-card {
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.45);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.25), rgba(14, 116, 144, 0.25));
+  backdrop-filter: blur(18px);
+}
+
+.gradient-border {
+  position: relative;
+  z-index: 0;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(45, 212, 191, 0.8));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  min-height: 100vh;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+
+  --color-background: #0f172a;
+  --color-surface: #16213e;
+  --color-primary: #38bdf8;
+  --color-primary-foreground: #0f172a;
+  --color-secondary: #f59e0b;
+  --color-accent: #22c55e;
+  --color-muted: #94a3b8;
+  --color-border: #1e293b;
+  --color-ring: rgba(56, 189, 248, 0.4);
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Sora', 'Inter', system-ui, sans-serif;
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+  --shadow-card: 0 20px 45px rgba(15, 23, 42, 0.35);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-muted);
+  min-height: 100vh;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+  }
+ dev
+ dev
+ dev
 }

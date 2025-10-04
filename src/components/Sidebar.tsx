@@ -9,6 +9,12 @@ const navItems = [
   { to: '/pie', label: 'Spending Breakdown' },
   { to: '/temas', label: 'Themes' },
   { to: '/configuracoes', label: 'Settings' }
+  { to: '/dashboard/entrada', label: 'Entrada' },
+  { to: '/dashboard/saida', label: 'Saída' },
+  { to: '/dashboard/bills', label: 'Contas a pagar' },
+  { to: '/dashboard/pie', label: 'Gráfico Pizza' },
+  { to: '/dashboard/temas', label: 'Temas' },
+  { to: '/dashboard/configuracoes', label: 'Configurações' }
 ];
 
 export function Sidebar() {

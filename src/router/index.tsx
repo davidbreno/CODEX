@@ -17,6 +17,7 @@ export const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
+    path: '/dashboard',
     element: <DashboardLayout />,
     children: [
       { path: '/', element: <Navigate to="/dashboard" replace /> },
@@ -28,6 +29,22 @@ export const router = createBrowserRouter([
       { path: '/temas', element: <TemasPage /> },
       { path: '/configuracoes', element: <ConfiguracoesPage /> },
       { path: '*', element: <Navigate to="/dashboard" replace /> }
+      { index: true, element: <DashboardPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
+      { path: 'entrada', element: <EntradaPage /> },
+      { path: 'saida', element: <SaidaPage /> },
+      { path: 'bills', element: <ContasAPagarPage /> },
+      { path: 'pie', element: <GraficoPizzaPage /> },
+      { path: 'temas', element: <TemasPage /> },
+      { path: 'configuracoes', element: <ConfiguracoesPage /> }
     ]
+  },
+  {
+    path: '/',
+    element: <Navigate to="/dashboard" replace />
+  },
+  {
+    path: '*',
+    element: <Navigate to="/dashboard" replace />
   }
 ]);

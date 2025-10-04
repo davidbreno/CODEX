@@ -1,7 +1,10 @@
 {
+ codex/implement-usetheme-hook-and-context
+
  codex/create-kpi-cards-with-recharts
 
  codex/create-dashboardlayout-components-and-routing
+ dev
  dev
   "compilerOptions": {
     "composite": true,
@@ -10,6 +13,8 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["vite.config.ts"]
+ codex/implement-usetheme-hook-and-context
+
  codex/create-kpi-cards-with-recharts
 
 
@@ -25,6 +30,7 @@
     "types": ["node"]
   },
   "include": ["vite.config.ts", "tsconfig.node.json"]
+ dev
  dev
  dev
 }

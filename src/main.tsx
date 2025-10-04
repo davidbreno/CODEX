@@ -1,5 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+ codex/implement-usetheme-hook-and-context
+import App from './App';
+import './index.css';
+import { ThemeProvider } from './theme';
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+
  codex/create-kpi-cards-with-recharts
 
  codex/create-dashboardlayout-components-and-routing
@@ -27,6 +38,7 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <RouterProvider router={router} />
+ dev
  dev
  dev
   </React.StrictMode>

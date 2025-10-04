@@ -24,12 +24,12 @@ const createDefaultState = (): FormState => ({
 });
 
 export default function Saida() {
-  const { addTransaction, bills, savingTransactionKind } = useFinance();
+  const { addTransaction, bills, savingTransactionType } = useFinance();
   const [formState, setFormState] = useState<FormState>(() => createDefaultState());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const isSubmitting = savingTransactionKind === 'saida';
+  const isSubmitting = savingTransactionType === 'expense';
 
   const amountPreview = useMemo(() => {
     if (!formState.amountInCents) {
@@ -68,9 +68,9 @@ export default function Saida() {
     }
 
     try {
-      await addTransaction('saida', {
+      await addTransaction('expense', {
         category: formState.category.trim(),
-        amountInCents: Math.round(amount),
+        value: Math.round(amount),
         date: formState.date,
         description: formState.description.trim(),
         account: formState.account.trim(),
@@ -176,7 +176,7 @@ export default function Saida() {
               <option value="">Sem associação</option>
               {pendingBills.map((bill) => (
                 <option key={bill.id} value={bill.id}>
-                  {bill.description} — {formatCurrency(bill.amountInCents)} (vence em {dayjs(bill.dueDate).format('DD/MM')})
+                  {bill.description} — {formatCurrency(bill.value)} (vence em {dayjs(bill.dueDate).format('DD/MM')})
                 </option>
               ))}
             </select>

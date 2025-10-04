@@ -13,7 +13,7 @@ export const FinanceCalendar = () => {
   const events = useMemo<EventInput[]>(
     () =>
       bills.map((bill) => {
-        const color = bill.status === 'paid' ? '#16a34a' : '#f97316';
+        const color = bill.status === 'pago' ? '#16a34a' : '#f97316';
 
         return {
           id: bill.id,
@@ -22,7 +22,7 @@ export const FinanceCalendar = () => {
           allDay: true,
           backgroundColor: color,
           borderColor: color,
-          classNames: [bill.status === 'paid' ? 'opacity-70' : 'font-semibold']
+          classNames: [bill.status === 'pago' ? 'opacity-70' : 'font-semibold']
         } satisfies EventInput;
       }),
     [bills]

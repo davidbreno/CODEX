@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
 import type {
   Bill,
+  BillStatus,
   Preferences,
   ThemePreference,
   Transaction,
-  User,
+  User
 } from '../types/finance';
 import seedData from './data/finance.json';
 
@@ -26,9 +27,9 @@ export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt
   id?: string;
 };
 
-export type BillInput = Omit<Bill, 'id' | 'paid' | 'paidAt'> & {
+export type BillInput = Omit<Bill, 'id' | 'status' | 'paidAt'> & {
   id?: string;
-  paid?: boolean;
+  status?: BillStatus;
   paidAt?: string;
 };
 
@@ -126,7 +127,7 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
   const data = ensureStore();
   const bill: Bill = {
     id: payload.id ?? generateId(),
-    paid: payload.paid ?? false,
+    status: payload.status ?? 'pendente',
     paidAt: payload.paidAt,
     ...payload,
   };
@@ -149,7 +150,7 @@ export const markBillAsPaid = async (
 
   const updated: Bill = {
     ...data.bills[index],
-    paid: true,
+    status: 'pago',
     paidAt,
   };
 

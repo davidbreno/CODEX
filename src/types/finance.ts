@@ -14,9 +14,10 @@ export interface Transaction extends TransactionFormInput {
   id: string;
   kind: TransactionKind;
   createdAt: string;
+  updatedAt?: string;
 }
 
-export type BillStatus = 'pending' | 'paid';
+export type BillStatus = 'pendente' | 'pago';
 
 export interface Bill {
   id: string;
@@ -25,30 +26,9 @@ export interface Bill {
   dueDate: string;
   status: BillStatus;
   account: string;
-
-export type TransactionType = 'income' | 'expense';
-
-export interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string;
-  type: TransactionType;
-  createdAt: string;
-  updatedAt: string;
-  notes?: string;
-}
-
-export interface Bill {
-  id: string;
-  name: string;
-  amount: number;
-  dueDate: string;
-  paid: boolean;
   paidAt?: string;
-  notes?: string;
   transactionId?: string;
+  notes?: string;
 }
 
 export type ThemePreference = 'light' | 'dark' | 'system';
@@ -71,5 +51,4 @@ export interface FinanceSnapshot {
   preferences: Preferences;
   user?: User;
   updatedAt: string;
- dev
 }

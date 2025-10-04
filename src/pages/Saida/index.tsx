@@ -89,7 +89,7 @@ export default function Saida() {
     }
   };
 
-  const pendingBills = bills.filter((bill) => bill.status === 'pending');
+  const pendingBills = bills.filter((bill) => bill.status === 'pendente');
 
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-10">

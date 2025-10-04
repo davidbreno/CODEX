@@ -23,7 +23,7 @@ export function ContasAPagarPage() {
       if (transaction) {
         setFeedback({
           type: 'success',
-          message: `Conta paga e transação de saída criada (${formatCurrency(transaction.amountInCents)}).`
+          message: `Conta paga e transação de saída criada (${formatCurrency(transaction.value)}).`
         });
       } else {
         setFeedback({ type: 'success', message: 'Conta já estava marcada como paga.' });
@@ -71,6 +71,53 @@ export function ContasAPagarPage() {
             <tbody className="divide-y divide-white/5">
               {sortedBills.map((bill) => {
                 const isPaying = payingBills.includes(bill.id);
+          <div className="mt-6 overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <thead className="bg-slate-100 text-left font-medium text-slate-600">
+                <tr>
+                  <th className="px-4 py-3">Descrição</th>
+                  <th className="px-4 py-3">Valor (BRL)</th>
+                  <th className="px-4 py-3">Vencimento</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {sortedBills.map((bill) => {
+                  const isPaying = payingBills.includes(bill.id);
+
+                  return (
+                    <tr key={bill.id} className="transition hover:bg-slate-50">
+                      <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-700">{bill.description}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatCurrency(bill.value)}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatDate(bill.dueDate)}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={clsx(
+                            'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
+                            bill.status === 'paid'
+                              ? 'bg-emerald-50 text-emerald-600'
+                              : 'bg-amber-50 text-amber-600'
+                          )}
+                        >
+                          {bill.status === 'paid' ? 'Paga' : 'Pendente'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          className="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+                          onClick={() => handleMarkPaid(bill.id)}
+                          disabled={bill.status === 'paid' || isPaying}
+                        >
+                          {isPaying ? 'Processando...' : 'Marcar como paga'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
                 return (
                   <tr key={bill.id} className="transition hover:bg-white/5">

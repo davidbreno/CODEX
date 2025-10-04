@@ -26,11 +26,13 @@ const labelClassName = 'flex flex-col text-sm font-medium text-white/80';
 
 export function EntradaPage() {
   const { addTransaction, savingTransactionKind } = useFinance();
+export default function Entrada() {
+  const { addTransaction, savingTransactionType } = useFinance();
   const [formState, setFormState] = useState<FormState>(() => createDefaultState());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const isSubmitting = savingTransactionKind === 'entrada';
+  const isSubmitting = savingTransactionType === 'income';
 
   const amountPreview = useMemo(() => {
     if (!formState.amountInCents) {
@@ -72,9 +74,9 @@ export function EntradaPage() {
     }
 
     try {
-      await addTransaction('entrada', {
+      await addTransaction('income', {
         category: formState.category.trim(),
-        amountInCents: Math.round(amount),
+        value: Math.round(amount),
         date: formState.date,
         description: formState.description.trim(),
         account: formState.account.trim()

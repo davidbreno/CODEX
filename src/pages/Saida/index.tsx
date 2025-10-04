@@ -29,11 +29,13 @@ const labelClassName = 'flex flex-col text-sm font-medium text-white/80';
 
 export function SaidaPage() {
   const { addTransaction, bills, savingTransactionKind } = useFinance();
+]export default function Saida() {
+  const { addTransaction, bills, savingTransactionType } = useFinance();
   const [formState, setFormState] = useState<FormState>(() => createDefaultState());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const isSubmitting = savingTransactionKind === 'saida';
+  const isSubmitting = savingTransactionType === 'expense';
 
   const amountPreview = useMemo(() => {
     if (!formState.amountInCents) {
@@ -72,9 +74,9 @@ export function SaidaPage() {
     }
 
     try {
-      await addTransaction('saida', {
+      await addTransaction('expense', {
         category: formState.category.trim(),
-        amountInCents: Math.round(amount),
+        value: Math.round(amount),
         date: formState.date,
         description: formState.description.trim(),
         account: formState.account.trim(),
@@ -124,6 +126,12 @@ export function SaidaPage() {
             <datalist id="expense-categories">
               {categories.map((category) => (
                 <option key={category} value={category} />
+            >
+              <option value="">Sem associação</option>
+              {pendingBills.map((bill) => (
+                <option key={bill.id} value={bill.id}>
+                  {bill.description} — {formatCurrency(bill.value)} (vence em {dayjs(bill.dueDate).format('DD/MM')})
+                </option>
               ))}
             </datalist>
           </label>

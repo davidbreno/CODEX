@@ -2,9 +2,13 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import type {
   Bill,
+  BillInput,
   Preferences,
   ThemePreference,
   Transaction,
+  TransactionInput,
+  TransactionFormInput,
+  TransactionKind,
   User,
 } from '../types/finance';
 import * as api from '../services/mockApi';
@@ -17,11 +21,23 @@ export interface FinanceStore {
   loading: boolean;
   error?: string;
   lastSync?: string;
+  creatingTransactionKind: TransactionKind | null;
+  payingBillIds: string[];
   fetchTransactions: () => Promise<Transaction[]>;
-  addTransaction: (payload: api.TransactionInput) => Promise<Transaction>;
+  addTransaction: (payload: TransactionInput) => Promise<Transaction>;
+  fetchBills: () => Promise<Bill[]>;
+  addBill: (payload: BillInput) => Promise<Bill>;
+  markBillAsPaid: (id: string, paidAt?: string) => Promise<Bill | undefined>;
+  createTransaction: (
+    payload: TransactionFormInput & { kind: TransactionKind }
+  ) => Promise<Transaction>;
   fetchBills: () => Promise<Bill[]>;
   addBill: (payload: api.BillInput) => Promise<Bill>;
-  markBillAsPaid: (id: string, paidAt?: string) => Promise<Bill | undefined>;
+  markBillAsPaid: (
+    id: string,
+    paidAt?: string,
+  ) => Promise<{ bill?: Bill; transaction?: Transaction }>;
+
   fetchUser: () => Promise<User | undefined>;
   saveUser: (payload: User | ((current?: User) => User)) => Promise<User>;
   fetchPreferences: () => Promise<Preferences>;
@@ -44,6 +60,8 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
   loading: false,
   error: undefined,
   lastSync: undefined,
+  creatingTransactionKind: null,
+  payingBillIds: [],
   async fetchTransactions() {
     set({ loading: true, error: undefined });
     try {
@@ -59,16 +77,39 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
       throw error;
     }
   },
-  async addTransaction(payload) {
+  async createTransaction(payload) {
+    set({ creatingTransactionKind: payload.kind, error: undefined });
     try {
       const transaction = await api.addTransaction(payload);
-      set((state) => ({
-        transactions: [transaction, ...state.transactions.filter((item) => item.id !== transaction.id)],
-        lastSync: dayjs().toISOString(),
-      }));
+      set((state) => {
+        const transactions = [
+          transaction,
+          ...state.transactions.filter((item) => item.id !== transaction.id),
+        ].sort((first, second) => dayjs(second.date).valueOf() - dayjs(first.date).valueOf());
+
+        const bills = payload.billId
+          ? state.bills.map((bill) =>
+              bill.id === payload.billId
+                ? {
+                    ...bill,
+                    status: 'paid',
+                    paidAt: payload.date,
+                    transactionId: transaction.id,
+                  }
+                : bill,
+            )
+          : state.bills;
+
+        return {
+          transactions,
+          bills,
+          lastSync: dayjs().toISOString(),
+          creatingTransactionKind: null,
+        };
+      });
       return transaction;
     } catch (error) {
-      set({ error: mapError(error) });
+      set({ creatingTransactionKind: null, error: mapError(error) });
       throw error;
     }
   },
@@ -101,18 +142,62 @@ export const useFinanceStore = create<FinanceStore>((set, get) => ({
     }
   },
   async markBillAsPaid(id, paidAt) {
+    const { bills } = get();
+    const target = bills.find((bill) => bill.id === id);
+    if (!target) {
+      const error = new Error('Conta não encontrada.');
+      set({ error: error.message });
+      throw error;
+    }
+
+    if (target.status === 'paid') {
+      return { bill: target, transaction: undefined };
+    }
+
+    set((state) => ({
+      payingBillIds: state.payingBillIds.includes(id)
+        ? state.payingBillIds
+        : [...state.payingBillIds, id],
+      error: undefined,
+    }));
+
     try {
-      const updated = await api.markBillAsPaid(id, paidAt);
-      if (!updated) {
-        return undefined;
-      }
+      const paymentDate = paidAt ?? dayjs().format('YYYY-MM-DD');
+      const transaction = await api.addTransaction({
+        kind: 'saida',
+        category: 'Pagamento de conta',
+        amountInCents: target.amountInCents,
+        date: paymentDate,
+        description: `Pagamento de ${target.description}`,
+        account: target.account,
+        billId: target.id,
+      });
+
+      const updatedBill: Bill = {
+        ...target,
+        status: 'paid',
+        paidAt: paymentDate,
+        transactionId: transaction.id,
+      };
+
+      await api.markBillAsPaid(target.id, paymentDate, transaction.id);
+
       set((state) => ({
-        bills: state.bills.map((bill) => (bill.id === updated.id ? updated : bill)),
+        transactions: [
+          transaction,
+          ...state.transactions.filter((item) => item.id !== transaction.id),
+        ].sort((first, second) => dayjs(second.date).valueOf() - dayjs(first.date).valueOf()),
+        bills: state.bills.map((bill) => (bill.id === id ? updatedBill : bill)),
         lastSync: dayjs().toISOString(),
+        payingBillIds: state.payingBillIds.filter((billId) => billId !== id),
       }));
-      return updated;
+
+      return { bill: updatedBill, transaction };
     } catch (error) {
-      set({ error: mapError(error) });
+      set((state) => ({
+        payingBillIds: state.payingBillIds.filter((billId) => billId !== id),
+        error: mapError(error),
+      }));
       throw error;
     }
   },

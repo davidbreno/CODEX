@@ -2,13 +2,14 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 
 const titles: Record<string, string> = {
-  '/': 'Dashboard',
-  '/entrada': 'Entradas',
-  '/saida': 'Saídas',
-  '/contas-a-pagar': 'Contas a pagar',
-  '/grafico-pizza': 'Gráfico Pizza',
-  '/temas': 'Temas',
-  '/configuracoes': 'Configurações'
+  '/dashboard': 'Dashboard',
+  '/dashboard/dashboard': 'Dashboard',
+  '/dashboard/entrada': 'Entradas',
+  '/dashboard/saida': 'Saídas',
+  '/dashboard/bills': 'Contas a pagar',
+  '/dashboard/pie': 'Gráfico Pizza',
+  '/dashboard/temas': 'Temas',
+  '/dashboard/configuracoes': 'Configurações'
 };
 
 export function DashboardLayout() {
@@ -16,7 +17,7 @@ export function DashboardLayout() {
   const title = titles[location.pathname] ?? 'Dashboard';
 
   return (
-    <div className="flex min-h-screen bg-midnight text-white">
+    <div className="flex min-h-screen bg-midnight text-white bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.18),_transparent_55%)]">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-10 border-b border-white/10 bg-midnight/90 backdrop-blur">

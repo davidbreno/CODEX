@@ -162,3 +162,51 @@ body {
  dev
  dev
 }
+
+.calendar-surface .fc-theme-standard td,
+.calendar-surface .fc-theme-standard th,
+.calendar-surface .fc-theme-standard .fc-scrollgrid {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.calendar-surface .fc .fc-toolbar-title,
+.calendar-surface .fc .fc-col-header-cell-cushion,
+.calendar-surface .fc .fc-daygrid-day-number {
+  color: rgba(248, 250, 252, 0.92);
+}
+
+.calendar-surface .fc .fc-daygrid-day-frame {
+  background-color: transparent;
+}
+
+.calendar-surface .fc .fc-daygrid-day.fc-day-today {
+  background-color: rgba(138, 43, 226, 0.18);
+}
+
+.calendar-surface .fc .fc-button {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(248, 250, 252, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.calendar-surface .fc .fc-button:hover {
+  background-color: rgba(0, 234, 255, 0.2);
+  border-color: rgba(0, 234, 255, 0.35);
+}
+
+.calendar-surface .fc .fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(0, 234, 255, 0.25);
+}
+
+.calendar-surface .fc .fc-button:disabled {
+  opacity: 0.5;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.calendar-surface .fc .fc-daygrid-event {
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.5rem;
+  font-weight: 600;
+}

@@ -8,8 +8,10 @@ import {
   useState,
   type ReactNode
 } from 'react';
-import type { Bill, Transaction, TransactionFormInput, TransactionKind } from '../types/finance';
+import type { Bill, Transaction, TransactionType } from '../types/finance';
 import { createId } from '../utils/format';
+
+type NewTransactionInput = Omit<Transaction, 'id' | 'type' | 'createdAt' | 'updatedAt'>;
 
 interface FinanceState {
   transactions: Transaction[];
@@ -18,7 +20,10 @@ interface FinanceState {
 
 type FinanceAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
-  | { type: 'MARK_BILL_PAID'; payload: { billId: string; transaction?: Transaction } };
+  | {
+      type: 'MARK_BILL_PAID';
+      payload: { billId: string; paidAt: string; transaction?: Transaction };
+    };
 
 const initialState: FinanceState = {
   transactions: [],
@@ -63,7 +68,14 @@ function financeReducer(state: FinanceState, action: FinanceAction): FinanceStat
       return {
         ...state,
         bills: state.bills.map((bill) =>
-          bill.id === action.payload.billId ? { ...bill, status: 'paid' } : bill
+          bill.id === action.payload.billId
+            ? {
+                ...bill,
+                status: 'paid',
+                paidAt: action.payload.paidAt,
+                transactionId: action.payload.transaction?.id ?? bill.transactionId
+              }
+            : bill
         ),
         transactions:
           action.payload.transaction !== undefined
@@ -79,11 +91,11 @@ interface FinanceContextValue {
   transactions: Transaction[];
   bills: Bill[];
   addTransaction: (
-    kind: TransactionKind,
-    data: TransactionFormInput
+    type: TransactionType,
+    data: NewTransactionInput
   ) => Promise<{ transaction: Transaction }>;
   markBillPaid: (billId: string) => Promise<{ transaction?: Transaction }>;
-  savingTransactionKind: TransactionKind | null;
+  savingTransactionType: TransactionType | null;
   payingBills: string[];
 }
 
@@ -91,12 +103,12 @@ const FinanceContext = createContext<FinanceContextValue | undefined>(undefined)
 
 export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
-  const [savingTransactionKind, setSavingTransactionKind] = useState<TransactionKind | null>(null);
+  const [savingTransactionType, setSavingTransactionType] = useState<TransactionType | null>(null);
   const [payingBills, setPayingBills] = useState<string[]>([]);
 
   const addTransaction = useCallback<FinanceContextValue['addTransaction']>(
-    async (kind, data) => {
-      setSavingTransactionKind(kind);
+    async (type, data) => {
+      setSavingTransactionType(type);
 
       try {
         if (!data.category.trim()) {
@@ -115,11 +127,13 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           throw new Error('Informe uma conta.');
         }
 
+        const timestamp = new Date().toISOString();
         const transaction: Transaction = {
           ...data,
           id: createId(),
-          kind,
-          createdAt: new Date().toISOString()
+          type,
+          createdAt: timestamp,
+          updatedAt: timestamp
         };
 
         await wait(350);
@@ -128,7 +142,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
 
         return { transaction };
       } finally {
-        setSavingTransactionKind(null);
+        setSavingTransactionType(null);
       }
     },
     []
@@ -150,21 +164,23 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           return { transaction: undefined };
         }
 
+        const paidAt = new Date().toISOString();
         const transaction: Transaction = {
           id: createId(),
-          kind: 'saida',
+          type: 'expense',
           category: 'Pagamento de conta',
           amountInCents: bill.amountInCents,
           date: dayjs().format('YYYY-MM-DD'),
           description: `Pagamento de ${bill.description}`,
           account: bill.account,
           billId: bill.id,
-          createdAt: new Date().toISOString()
+          createdAt: paidAt,
+          updatedAt: paidAt
         };
 
         await wait(400);
 
-        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, transaction } });
+        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, paidAt, transaction } });
 
         return { transaction };
       } finally {
@@ -180,10 +196,10 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       bills: state.bills,
       addTransaction,
       markBillPaid,
-      savingTransactionKind,
+      savingTransactionType,
       payingBills
     }),
-    [state.transactions, state.bills, addTransaction, markBillPaid, savingTransactionKind, payingBills]
+    [state.transactions, state.bills, addTransaction, markBillPaid, savingTransactionType, payingBills]
   );
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;

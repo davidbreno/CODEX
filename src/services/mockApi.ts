@@ -26,10 +26,9 @@ export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt
   id?: string;
 };
 
-export type BillInput = Omit<Bill, 'id' | 'paid' | 'paidAt'> & {
+export type BillInput = Omit<Bill, 'id' | 'status'> & {
   id?: string;
-  paid?: boolean;
-  paidAt?: string;
+  status?: Bill['status'];
 };
 
 const STORAGE_KEY = 'codex-finance-data';
@@ -126,9 +125,8 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
   const data = ensureStore();
   const bill: Bill = {
     id: payload.id ?? generateId(),
-    paid: payload.paid ?? false,
-    paidAt: payload.paidAt,
     ...payload,
+    status: payload.status ?? 'pending',
   };
   data.bills = [bill, ...data.bills];
   touchUpdatedAt(data);
@@ -149,7 +147,7 @@ export const markBillAsPaid = async (
 
   const updated: Bill = {
     ...data.bills[index],
-    paid: true,
+    status: 'paid',
     paidAt,
   };
 

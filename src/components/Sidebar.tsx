@@ -3,6 +3,10 @@ import clsx from 'classnames';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/entrada', label: 'Entrada' },
+  { to: '/saida', label: 'Saída' },
+  { to: '/bills', label: 'Contas a pagar' },
+  { to: '/pie', label: 'Gráfico pizza' }
   { to: '/entrada', label: 'Income' },
   { to: '/saida', label: 'Expenses' },
   { to: '/bills', label: 'Bills' },

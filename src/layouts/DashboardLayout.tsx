@@ -2,13 +2,14 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 
 const titles: Record<string, string> = {
-  '/': 'Dashboard',
-  '/entrada': 'Entradas',
-  '/saida': 'Saídas',
-  '/contas-a-pagar': 'Contas a pagar',
-  '/grafico-pizza': 'Gráfico Pizza',
-  '/temas': 'Temas',
-  '/configuracoes': 'Configurações'
+  '/dashboard': 'Dashboard',
+  '/dashboard/dashboard': 'Dashboard',
+  '/dashboard/entrada': 'Entradas',
+  '/dashboard/saida': 'Saídas',
+  '/dashboard/bills': 'Contas a pagar',
+  '/dashboard/pie': 'Gráfico Pizza',
+  '/dashboard/temas': 'Temas',
+  '/dashboard/configuracoes': 'Configurações'
 };
 
 export function DashboardLayout() {

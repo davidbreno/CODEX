@@ -4,11 +4,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import type { EventInput } from '@fullcalendar/core';
 import ptLocale from '@fullcalendar/core/locales/pt-br';
-import { useFinance } from '../store/FinanceContext';
+import { useFinanceStore } from '../store/financeStore';
 import { formatCurrency } from '../utils/format';
 
 export const FinanceCalendar = () => {
-  const { bills } = useFinance();
+  const bills = useFinanceStore((state) => state.bills);
 
   const events = useMemo<EventInput[]>(
     () =>

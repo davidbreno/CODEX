@@ -1,4 +1,7 @@
 export type TransactionType = 'income' | 'expense';
+import type { TransactionInput as ApiTransactionInput, BillInput as ApiBillInput } from '../services/mockApi';
+
+export type TransactionKind = 'entrada' | 'saida';
 
 export interface TransactionDraft {
   category: string;
@@ -40,6 +43,9 @@ export interface Bill extends BillDraft {
   createdAt: string;
   updatedAt: string;
   paidAt?: string;
+  paidAt?: string;
+  transactionId?: string;
+  notes?: string;
 }
 
 export type BillInput = BillDraft &
@@ -68,3 +74,6 @@ export interface FinanceSnapshot {
   user?: User;
   updatedAt: string;
 }
+
+export type TransactionInput = ApiTransactionInput;
+export type BillInput = ApiBillInput;

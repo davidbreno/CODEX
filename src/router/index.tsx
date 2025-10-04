@@ -19,14 +19,15 @@ export const router = createBrowserRouter([
   {
     element: <DashboardLayout />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'entrada', element: <EntradaPage /> },
-      { path: 'saida', element: <SaidaPage /> },
-      { path: 'contas-a-pagar', element: <ContasAPagarPage /> },
-      { path: 'grafico-pizza', element: <GraficoPizzaPage /> },
-      { path: 'temas', element: <TemasPage /> },
-      { path: 'configuracoes', element: <ConfiguracoesPage /> },
-      { path: '*', element: <Navigate to="/" replace /> }
+      { path: '/', element: <Navigate to="/dashboard" replace /> },
+      { path: '/dashboard', element: <DashboardPage /> },
+      { path: '/entrada', element: <EntradaPage /> },
+      { path: '/saida', element: <SaidaPage /> },
+      { path: '/bills', element: <ContasAPagarPage /> },
+      { path: '/pie', element: <GraficoPizzaPage /> },
+      { path: '/temas', element: <TemasPage /> },
+      { path: '/configuracoes', element: <ConfiguracoesPage /> },
+      { path: '*', element: <Navigate to="/dashboard" replace /> }
     ]
   }
 ]);

@@ -1,3 +1,4 @@
+export { SaidaPage } from './Saida';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useFinanceStore } from '../store/financeStore';

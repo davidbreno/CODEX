@@ -1,3 +1,4 @@
+export { ContasAPagarPage } from './Bills';
 import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import dayjs from 'dayjs';

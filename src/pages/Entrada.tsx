@@ -1,3 +1,4 @@
+export { EntradaPage } from './Entrada';
 import { FormEvent, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
 import { useFinanceStore } from '../store/financeStore';

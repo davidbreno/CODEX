@@ -10,7 +10,7 @@ interface FeedbackMessage {
   message: string;
 }
 
-export default function Bills() {
+export function ContasAPagarPage() {
   const { bills, markBillPaid, payingBills } = useFinance();
   const [feedback, setFeedback] = useState<FeedbackMessage | null>(null);
 
@@ -38,24 +38,39 @@ export default function Bills() {
     }
   };
 
-  const sortedBills = [...bills].sort((first, second) => dayjs(first.dueDate).valueOf() - dayjs(second.dueDate).valueOf());
+  const sortedBills = [...bills].sort(
+    (first, second) => dayjs(first.dueDate).valueOf() - dayjs(second.dueDate).valueOf()
+  );
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-slate-800">Contas a pagar</h1>
-              <p className="text-sm text-slate-600">
-                Acompanhe vencimentos, marque contas como pagas e gere a transação correspondente automaticamente.
-              </p>
-            </div>
-            <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
-              {sortedBills.filter((bill) => bill.status === 'pending').length} pendentes
-            </span>
+    <section className="space-y-8">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-aurora-end/20 backdrop-blur">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-semibold">Contas a pagar</h2>
+            <p className="text-sm text-white/70">
+              Acompanhe vencimentos, marque contas como pagas e gere a transação correspondente automaticamente.
+            </p>
           </div>
+          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+            {sortedBills.filter((bill) => bill.status === 'pending').length} pendentes
+          </span>
+        </div>
 
+        <div className="mt-6 overflow-x-auto">
+          <table className="min-w-full divide-y divide-white/10 text-sm">
+            <thead className="bg-white/10 text-left text-white/70">
+              <tr>
+                <th className="px-4 py-3 font-medium">Descrição</th>
+                <th className="px-4 py-3 font-medium">Valor (BRL)</th>
+                <th className="px-4 py-3 font-medium">Vencimento</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 text-right font-medium">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {sortedBills.map((bill) => {
+                const isPaying = payingBills.includes(bill.id);
           <div className="mt-6 overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-100 text-left font-medium text-slate-600">
@@ -104,22 +119,56 @@ export default function Bills() {
             </table>
           </div>
 
-          {feedback && (
-            <div
-              className={clsx(
-                'mt-4 rounded-md px-4 py-3 text-sm',
-                feedback.type === 'success'
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'bg-rose-50 text-rose-600'
-              )}
-            >
-              {feedback.message}
-            </div>
-          )}
+                return (
+                  <tr key={bill.id} className="transition hover:bg-white/5">
+                    <td className="whitespace-nowrap px-4 py-3 font-medium text-white">{bill.description}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-white/70">{formatCurrency(bill.amountInCents)}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-white/70">{formatDate(bill.dueDate)}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={clsx(
+                          'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
+                          bill.status === 'paid'
+                            ? 'bg-emerald-500/10 text-emerald-300'
+                            : 'bg-amber-500/10 text-amber-300'
+                        )}
+                      >
+                        {bill.status === 'paid' ? 'Paga' : 'Pendente'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        className="inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition hover:border-aurora-start hover:text-aurora-start disabled:cursor-not-allowed disabled:border-white/5 disabled:text-white/40"
+                        onClick={() => handleMarkPaid(bill.id)}
+                        disabled={bill.status === 'paid' || isPaying}
+                      >
+                        {isPaying ? 'Processando...' : 'Marcar como paga'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-        <FinanceCalendar />
+        {feedback && (
+          <div
+            className={clsx(
+              'mt-6 rounded-xl px-4 py-3 text-sm',
+              feedback.type === 'success'
+                ? 'bg-emerald-500/10 text-emerald-200'
+                : 'bg-rose-500/10 text-rose-200'
+            )}
+          >
+            {feedback.message}
+          </div>
+        )}
       </div>
-    </main>
+
+      <FinanceCalendar />
+    </section>
   );
 }
+
+export default ContasAPagarPage;

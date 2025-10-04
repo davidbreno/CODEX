@@ -1,4 +1,5 @@
- codex/create-page-components-for-transactions
+import type { TransactionInput as ApiTransactionInput, BillInput as ApiBillInput } from '../services/mockApi';
+
 export type TransactionKind = 'entrada' | 'saida';
 
 export interface TransactionFormInput {
@@ -14,6 +15,7 @@ export interface Transaction extends TransactionFormInput {
   id: string;
   kind: TransactionKind;
   createdAt: string;
+  updatedAt: string;
 }
 
 export type BillStatus = 'pending' | 'paid';
@@ -25,30 +27,9 @@ export interface Bill {
   dueDate: string;
   status: BillStatus;
   account: string;
-
-export type TransactionType = 'income' | 'expense';
-
-export interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
-  category: string;
-  date: string;
-  type: TransactionType;
-  createdAt: string;
-  updatedAt: string;
-  notes?: string;
-}
-
-export interface Bill {
-  id: string;
-  name: string;
-  amount: number;
-  dueDate: string;
-  paid: boolean;
   paidAt?: string;
-  notes?: string;
   transactionId?: string;
+  notes?: string;
 }
 
 export type ThemePreference = 'light' | 'dark' | 'system';
@@ -71,5 +52,7 @@ export interface FinanceSnapshot {
   preferences: Preferences;
   user?: User;
   updatedAt: string;
- dev
 }
+
+export type TransactionInput = ApiTransactionInput;
+export type BillInput = ApiBillInput;

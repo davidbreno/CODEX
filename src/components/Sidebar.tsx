@@ -7,6 +7,18 @@ const navItems = [
   { to: '/saida', label: 'Saída' },
   { to: '/bills', label: 'Contas a pagar' },
   { to: '/pie', label: 'Gráfico pizza' }
+  { to: '/entrada', label: 'Income' },
+  { to: '/saida', label: 'Expenses' },
+  { to: '/bills', label: 'Bills' },
+  { to: '/pie', label: 'Spending Breakdown' },
+  { to: '/temas', label: 'Themes' },
+  { to: '/configuracoes', label: 'Settings' }
+  { to: '/dashboard/entrada', label: 'Entrada' },
+  { to: '/dashboard/saida', label: 'Saída' },
+  { to: '/dashboard/bills', label: 'Contas a pagar' },
+  { to: '/dashboard/pie', label: 'Gráfico Pizza' },
+  { to: '/dashboard/temas', label: 'Temas' },
+  { to: '/dashboard/configuracoes', label: 'Configurações' }
 ];
 
 export function Sidebar() {
@@ -24,6 +36,7 @@ export function Sidebar() {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === '/dashboard'}
             className={({ isActive }) =>
               clsx(
                 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition',

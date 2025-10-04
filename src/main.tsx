@@ -18,5 +18,9 @@ ReactDOM.createRoot(container).render(
         <App />
       </FinanceProvider>
     </ThemeProvider>
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>
 );

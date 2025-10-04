@@ -17,7 +17,7 @@ export function DashboardLayout() {
   const title = titles[location.pathname] ?? 'Dashboard';
 
   return (
-    <div className="flex min-h-screen bg-midnight text-white">
+    <div className="flex min-h-screen bg-midnight text-white bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.18),_transparent_55%)]">
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-10 border-b border-white/10 bg-midnight/90 backdrop-blur">

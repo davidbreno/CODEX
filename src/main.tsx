@@ -1,5 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import './index.css';
+import { ThemeProvider } from './theme';
+import { router } from './router';
 import App from './App';
 import './index.css';
 import { ThemeProvider } from './theme';
@@ -14,6 +18,8 @@ if (!container) {
 ReactDOM.createRoot(container).render(
   <React.StrictMode>
     <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
       <FinanceProvider>
         <App />
       </FinanceProvider>

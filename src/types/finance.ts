@@ -1,55 +1,49 @@
- codex/create-page-components-for-transactions
-export type TransactionKind = 'entrada' | 'saida';
-
-export interface TransactionFormInput {
-  category: string;
-  amountInCents: number;
-  date: string;
-  description: string;
-  account: string;
-  billId?: string;
-}
-
-export interface Transaction extends TransactionFormInput {
-  id: string;
-  kind: TransactionKind;
-  createdAt: string;
-}
-
-export type BillStatus = 'pending' | 'paid';
-
-export interface Bill {
-  id: string;
-  description: string;
-  amountInCents: number;
-  dueDate: string;
-  status: BillStatus;
-  account: string;
-
 export type TransactionType = 'income' | 'expense';
 
-export interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
+export interface TransactionDraft {
   category: string;
+  description: string;
+  account: string;
   date: string;
+  value: number;
+  billId?: string;
+  notes?: string;
+}
+
+export interface Transaction extends TransactionDraft {
+  id: string;
+  userId: string;
   type: TransactionType;
   createdAt: string;
   updatedAt: string;
-  notes?: string;
 }
 
-export interface Bill {
-  id: string;
-  name: string;
-  amount: number;
+export type TransactionInput = TransactionDraft &
+  Pick<Transaction, 'userId' | 'type'> &
+  Partial<Pick<Transaction, 'id' | 'createdAt' | 'updatedAt'>>;
+
+export type BillStatus = 'pending' | 'paid';
+
+export interface BillDraft {
+  description: string;
+  account: string;
+  value: number;
   dueDate: string;
-  paid: boolean;
-  paidAt?: string;
+  userId: string;
   notes?: string;
   transactionId?: string;
 }
+
+export interface Bill extends BillDraft {
+  id: string;
+  status: BillStatus;
+  createdAt: string;
+  updatedAt: string;
+  paidAt?: string;
+}
+
+export type BillInput = BillDraft &
+  Partial<Pick<Bill, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'paidAt'>>;
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 
@@ -61,6 +55,8 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
   avatarUrl?: string;
   themePreference?: ThemePreference;
 }
@@ -71,5 +67,4 @@ export interface FinanceSnapshot {
   preferences: Preferences;
   user?: User;
   updatedAt: string;
- dev
 }

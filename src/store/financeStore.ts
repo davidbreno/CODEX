@@ -2,9 +2,11 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import type {
   Bill,
+  BillInput,
   Preferences,
   ThemePreference,
   Transaction,
+  TransactionInput,
   User,
 } from '../types/finance';
 import * as api from '../services/mockApi';
@@ -18,9 +20,9 @@ export interface FinanceStore {
   error?: string;
   lastSync?: string;
   fetchTransactions: () => Promise<Transaction[]>;
-  addTransaction: (payload: api.TransactionInput) => Promise<Transaction>;
+  addTransaction: (payload: TransactionInput) => Promise<Transaction>;
   fetchBills: () => Promise<Bill[]>;
-  addBill: (payload: api.BillInput) => Promise<Bill>;
+  addBill: (payload: BillInput) => Promise<Bill>;
   markBillAsPaid: (id: string, paidAt?: string) => Promise<Bill | undefined>;
   fetchUser: () => Promise<User | undefined>;
   saveUser: (payload: User | ((current?: User) => User)) => Promise<User>;

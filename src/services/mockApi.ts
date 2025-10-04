@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import type {
   Bill,
+  BillInput,
   Preferences,
   ThemePreference,
   Transaction,
+  TransactionInput,
   User,
 } from '../types/finance';
 import seedData from './data/finance.json';
@@ -21,16 +23,6 @@ interface FinanceData {
   user?: User;
   updatedAt: string;
 }
-
-export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'> & {
-  id?: string;
-};
-
-export type BillInput = Omit<Bill, 'id' | 'paid' | 'paidAt'> & {
-  id?: string;
-  paid?: boolean;
-  paidAt?: string;
-};
 
 const STORAGE_KEY = 'codex-finance-data';
 const hasWindow = typeof window !== 'undefined';
@@ -102,10 +94,10 @@ export const addTransaction = async (payload: TransactionInput): Promise<Transac
   const data = ensureStore();
   const timestamp = dayjs().toISOString();
   const transaction: Transaction = {
-    id: payload.id ?? generateId(),
-    createdAt: timestamp,
-    updatedAt: timestamp,
     ...payload,
+    id: payload.id ?? generateId(),
+    createdAt: payload.createdAt ?? timestamp,
+    updatedAt: payload.updatedAt ?? timestamp,
   };
   data.transactions = [transaction, ...data.transactions];
   touchUpdatedAt(data);
@@ -124,11 +116,13 @@ export const listBills = async (): Promise<Bill[]> => {
 export const addBill = async (payload: BillInput): Promise<Bill> => {
   await delay();
   const data = ensureStore();
+  const timestamp = dayjs().toISOString();
   const bill: Bill = {
     id: payload.id ?? generateId(),
-    paid: payload.paid ?? false,
-    paidAt: payload.paidAt,
     ...payload,
+    status: payload.status ?? 'pending',
+    createdAt: payload.createdAt ?? timestamp,
+    updatedAt: payload.updatedAt ?? timestamp,
   };
   data.bills = [bill, ...data.bills];
   touchUpdatedAt(data);
@@ -149,8 +143,9 @@ export const markBillAsPaid = async (
 
   const updated: Bill = {
     ...data.bills[index],
-    paid: true,
+    status: 'paid',
     paidAt,
+    updatedAt: dayjs().toISOString(),
   };
 
   data.bills[index] = updated;

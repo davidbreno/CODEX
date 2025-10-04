@@ -17,7 +17,7 @@ export const FinanceCalendar = () => {
 
         return {
           id: bill.id,
-          title: `${bill.description} • ${formatCurrency(bill.amountInCents)}`,
+          title: `${bill.description} • ${formatCurrency(bill.value)}`,
           start: bill.dueDate,
           allDay: true,
           backgroundColor: color,

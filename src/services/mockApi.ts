@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+
 import type {
   Bill,
   BillStatus,
@@ -6,7 +7,16 @@ import type {
   ThemePreference,
   Transaction,
   User
+  BillInput,
+  Preferences,
+  ThemePreference,
+  Transaction,
+  TransactionInput,
+  User,
 } from '../types/finance';
+
+import type { Bill, Preferences, ThemePreference, Transaction, User } from '../types/finance';
+
 import seedData from './data/finance.json';
 
 type StorageLike = {
@@ -23,6 +33,8 @@ interface FinanceData {
   updatedAt: string;
 }
 
+
+
 export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'> & {
   id?: string;
 };
@@ -31,6 +43,10 @@ export type BillInput = Omit<Bill, 'id' | 'status' | 'paidAt'> & {
   id?: string;
   status?: BillStatus;
   paidAt?: string;
+export type BillInput = Omit<Bill, 'id' | 'status'> & {
+export type BillInput = Omit<Bill, 'id'> & {
+  id?: string;
+  status?: Bill['status'];
 };
 
 const STORAGE_KEY = 'codex-finance-data';
@@ -103,12 +119,26 @@ export const addTransaction = async (payload: TransactionInput): Promise<Transac
   const data = ensureStore();
   const timestamp = dayjs().toISOString();
   const transaction: Transaction = {
-    id: payload.id ?? generateId(),
-    createdAt: timestamp,
-    updatedAt: timestamp,
     ...payload,
+    id: payload.id ?? generateId(),
+    createdAt: payload.createdAt ?? timestamp,
+    updatedAt: payload.updatedAt ?? timestamp,
   };
   data.transactions = [transaction, ...data.transactions];
+
+  if (transaction.billId) {
+    const billIndex = data.bills.findIndex((bill) => bill.id === transaction.billId);
+    if (billIndex !== -1) {
+      const current = data.bills[billIndex];
+      data.bills[billIndex] = {
+        ...current,
+        status: 'paid',
+        paidAt: transaction.date,
+        transactionId: transaction.id,
+      } satisfies Bill;
+    }
+  }
+
   touchUpdatedAt(data);
   persistStore(data);
   return transaction;
@@ -125,11 +155,23 @@ export const listBills = async (): Promise<Bill[]> => {
 export const addBill = async (payload: BillInput): Promise<Bill> => {
   await delay();
   const data = ensureStore();
+  const timestamp = dayjs().toISOString();
   const bill: Bill = {
     id: payload.id ?? generateId(),
     status: payload.status ?? 'pendente',
-    paidAt: payload.paidAt,
     ...payload,
+    status: payload.status ?? 'pending',
+    ...payload,
+    status: payload.status ?? 'pending',
+
+    status: payload.status ?? 'pending',
+    paidAt: payload.paidAt,
+    transactionId: payload.transactionId,
+
+    ...payload,
+    status: payload.status ?? 'pending',
+    createdAt: payload.createdAt ?? timestamp,
+    updatedAt: payload.updatedAt ?? timestamp,
   };
   data.bills = [bill, ...data.bills];
   touchUpdatedAt(data);
@@ -139,7 +181,8 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
 
 export const markBillAsPaid = async (
   id: string,
-  paidAt: string = dayjs().toISOString(),
+  paidAt: string = dayjs().format('YYYY-MM-DD'),
+  transactionId?: string,
 ): Promise<Bill | undefined> => {
   await delay();
   const data = ensureStore();
@@ -151,7 +194,13 @@ export const markBillAsPaid = async (
   const updated: Bill = {
     ...data.bills[index],
     status: 'pago',
+    status: 'paid',
     paidAt,
+
+    updatedAt: dayjs().toISOString(),
+
+    transactionId: transactionId ?? data.bills[index]?.transactionId,
+
   };
 
   data.bills[index] = updated;

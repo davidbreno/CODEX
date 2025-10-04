@@ -29,11 +29,13 @@ export const FinanceCalendar = () => {
   );
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow">
-      <h2 className="text-lg font-semibold text-slate-700">Calendário de contas</h2>
-      <p className="mb-4 text-sm text-slate-500">
-        Eventos são atualizados automaticamente conforme contas são pagas ou permanecem pendentes.
-      </p>
+    <div className="space-y-2 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-aurora-end/10 backdrop-blur">
+      <div>
+        <h2 className="text-lg font-semibold text-white">Calendário de contas</h2>
+        <p className="text-sm text-white/60">
+          Eventos são atualizados automaticamente conforme contas são pagas ou permanecem pendentes.
+        </p>
+      </div>
       <FullCalendar
         height="auto"
         plugins={[dayGridPlugin, interactionPlugin]}

@@ -1,3 +1,8 @@
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+
+function App() {
+  return <RouterProvider router={router} />;
 import type { JSX } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { DashboardLayout } from './layouts/DashboardLayout';

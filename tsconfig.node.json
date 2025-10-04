@@ -1,5 +1,8 @@
 {
+ codex/create-kpi-cards-with-recharts
+
  codex/create-dashboardlayout-components-and-routing
+ dev
   "compilerOptions": {
     "composite": true,
     "module": "ESNext",
@@ -7,6 +10,8 @@
     "allowSyntheticDefaultImports": true
   },
   "include": ["vite.config.ts"]
+ codex/create-kpi-cards-with-recharts
+
 
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
@@ -20,5 +25,6 @@
     "types": ["node"]
   },
   "include": ["vite.config.ts", "tsconfig.node.json"]
+ dev
  dev
 }

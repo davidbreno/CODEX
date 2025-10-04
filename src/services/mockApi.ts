@@ -151,6 +151,8 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
     id: payload.id ?? generateId(),
     ...payload,
     status: payload.status ?? 'pending',
+    ...payload,
+    status: payload.status ?? 'pending',
 
     status: payload.status ?? 'pending',
     paidAt: payload.paidAt,

@@ -8,8 +8,11 @@ import {
   useState,
   type ReactNode
 } from 'react';
+import type { Bill, Transaction, TransactionType } from '../types/finance';
 import type { Bill, Transaction, TransactionDraft, TransactionType } from '../types/finance';
 import { createId } from '../utils/format';
+
+type NewTransactionInput = Omit<Transaction, 'id' | 'type' | 'createdAt' | 'updatedAt'>;
 
 interface FinanceState {
   transactions: Transaction[];
@@ -18,6 +21,10 @@ interface FinanceState {
 
 type FinanceAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
+  | {
+      type: 'MARK_BILL_PAID';
+      payload: { billId: string; paidAt: string; transaction?: Transaction };
+    };
   | { type: 'MARK_BILL_PAID'; payload: { billId: string; transaction?: Transaction; paidAt?: string } };
 
 const DEMO_USER_ID = 'demo-user';
@@ -79,6 +86,8 @@ function financeReducer(state: FinanceState, action: FinanceAction): FinanceStat
             ? {
                 ...bill,
                 status: 'paid',
+                paidAt: action.payload.paidAt,
+                transactionId: action.payload.transaction?.id ?? bill.transactionId
                 paidAt: action.payload.paidAt ?? bill.paidAt ?? dayjs().toISOString(),
                 updatedAt: action.payload.paidAt ?? dayjs().toISOString()
               }
@@ -99,6 +108,7 @@ interface FinanceContextValue {
   bills: Bill[];
   addTransaction: (
     type: TransactionType,
+    data: NewTransactionInput
     data: TransactionDraft
   ) => Promise<{ transaction: Transaction }>;
   markBillPaid: (billId: string) => Promise<{ transaction?: Transaction }>;
@@ -173,6 +183,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           return { transaction: undefined };
         }
 
+        const paidAt = new Date().toISOString();
         const timestamp = new Date().toISOString();
 
         const transaction: Transaction = {
@@ -184,6 +195,8 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           description: `Pagamento de ${bill.description}`,
           account: bill.account,
           billId: bill.id,
+          createdAt: paidAt,
+          updatedAt: paidAt
           userId: bill.userId,
           createdAt: timestamp,
           updatedAt: timestamp
@@ -191,6 +204,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
 
         await wait(400);
 
+        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, paidAt, transaction } });
         dispatch({ type: 'MARK_BILL_PAID', payload: { billId, transaction, paidAt: timestamp } });
 
         return { transaction };

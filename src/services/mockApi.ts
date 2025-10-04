@@ -34,6 +34,7 @@ export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt
   id?: string;
 };
 
+export type BillInput = Omit<Bill, 'id' | 'status'> & {
 export type BillInput = Omit<Bill, 'id'> & {
   id?: string;
   status?: Bill['status'];
@@ -148,6 +149,8 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
   const timestamp = dayjs().toISOString();
   const bill: Bill = {
     id: payload.id ?? generateId(),
+    ...payload,
+    status: payload.status ?? 'pending',
 
     status: payload.status ?? 'pending',
     paidAt: payload.paidAt,

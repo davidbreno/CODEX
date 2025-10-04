@@ -23,6 +23,7 @@ const createDefaultState = (): FormState => ({
   billId: ''
 });
 
+export default function Saida() {
 const inputClassName =
   'mt-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 shadow-sm transition focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-400/40';
 const labelClassName = 'flex flex-col text-sm font-medium text-white/80';

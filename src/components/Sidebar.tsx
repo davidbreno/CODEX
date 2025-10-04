@@ -2,13 +2,13 @@ import { NavLink } from 'react-router-dom';
 import clsx from 'classnames';
 
 const navItems = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/entrada', label: 'Entrada' },
-  { to: '/saida', label: 'Saída' },
-  { to: '/contas-a-pagar', label: 'Contas a pagar' },
-  { to: '/grafico-pizza', label: 'Gráfico Pizza' },
-  { to: '/temas', label: 'Temas' },
-  { to: '/configuracoes', label: 'Configurações' }
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/dashboard/entrada', label: 'Entrada' },
+  { to: '/dashboard/saida', label: 'Saída' },
+  { to: '/dashboard/bills', label: 'Contas a pagar' },
+  { to: '/dashboard/pie', label: 'Gráfico Pizza' },
+  { to: '/dashboard/temas', label: 'Temas' },
+  { to: '/dashboard/configuracoes', label: 'Configurações' }
 ];
 
 export function Sidebar() {
@@ -26,7 +26,7 @@ export function Sidebar() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/'}
+            end={item.to === '/dashboard'}
             className={({ isActive }) =>
               clsx(
                 'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition',

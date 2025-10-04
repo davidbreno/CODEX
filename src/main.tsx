@@ -1,45 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
- codex/implement-usetheme-hook-and-context
+import { RouterProvider } from 'react-router-dom';
+import './index.css';
+import { ThemeProvider } from './theme';
+import { router } from './router';
 import App from './App';
 import './index.css';
 import { ThemeProvider } from './theme';
+import { FinanceProvider } from './store/FinanceContext';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('Root element with id "root" was not found.');
+}
+
+ReactDOM.createRoot(container).render(
   <React.StrictMode>
     <ThemeProvider>
-      <App />
+      <RouterProvider router={router} />
     </ThemeProvider>
-
- codex/create-kpi-cards-with-recharts
-
- codex/create-dashboardlayout-components-and-routing
- dev
-import App from './App';
-import './index.css';
+      <FinanceProvider>
+        <App />
+      </FinanceProvider>
+    </ThemeProvider>
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <App />
- codex/create-kpi-cards-with-recharts
-
-
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App.tsx';
-import './index.css';
-
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-  },
-]);
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
- dev
- dev
- dev
   </React.StrictMode>
 );

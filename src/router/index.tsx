@@ -17,16 +17,25 @@ export const router = createBrowserRouter([
     element: <LoginPage />
   },
   {
+    path: '/dashboard',
     element: <DashboardLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
       { path: 'entrada', element: <EntradaPage /> },
       { path: 'saida', element: <SaidaPage /> },
-      { path: 'contas-a-pagar', element: <ContasAPagarPage /> },
-      { path: 'grafico-pizza', element: <GraficoPizzaPage /> },
+      { path: 'bills', element: <ContasAPagarPage /> },
+      { path: 'pie', element: <GraficoPizzaPage /> },
       { path: 'temas', element: <TemasPage /> },
-      { path: 'configuracoes', element: <ConfiguracoesPage /> },
-      { path: '*', element: <Navigate to="/" replace /> }
+      { path: 'configuracoes', element: <ConfiguracoesPage /> }
     ]
+  },
+  {
+    path: '/',
+    element: <Navigate to="/dashboard" replace />
+  },
+  {
+    path: '*',
+    element: <Navigate to="/dashboard" replace />
   }
 ]);

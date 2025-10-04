@@ -2,9 +2,11 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import type {
   Bill,
+  BillInput,
   Preferences,
   ThemePreference,
   Transaction,
+  TransactionInput,
   TransactionFormInput,
   TransactionKind,
   User,
@@ -22,6 +24,10 @@ export interface FinanceStore {
   creatingTransactionKind: TransactionKind | null;
   payingBillIds: string[];
   fetchTransactions: () => Promise<Transaction[]>;
+  addTransaction: (payload: TransactionInput) => Promise<Transaction>;
+  fetchBills: () => Promise<Bill[]>;
+  addBill: (payload: BillInput) => Promise<Bill>;
+  markBillAsPaid: (id: string, paidAt?: string) => Promise<Bill | undefined>;
   createTransaction: (
     payload: TransactionFormInput & { kind: TransactionKind }
   ) => Promise<Transaction>;
@@ -31,6 +37,7 @@ export interface FinanceStore {
     id: string,
     paidAt?: string,
   ) => Promise<{ bill?: Bill; transaction?: Transaction }>;
+
   fetchUser: () => Promise<User | undefined>;
   saveUser: (payload: User | ((current?: User) => User)) => Promise<User>;
   fetchPreferences: () => Promise<Preferences>;

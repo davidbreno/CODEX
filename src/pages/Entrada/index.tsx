@@ -21,12 +21,12 @@ const createDefaultState = (): FormState => ({
 });
 
 export default function Entrada() {
-  const { addTransaction, savingTransactionKind } = useFinance();
+  const { addTransaction, savingTransactionType } = useFinance();
   const [formState, setFormState] = useState<FormState>(() => createDefaultState());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const isSubmitting = savingTransactionKind === 'entrada';
+  const isSubmitting = savingTransactionType === 'income';
 
   const amountPreview = useMemo(() => {
     if (!formState.amountInCents) {
@@ -68,9 +68,9 @@ export default function Entrada() {
     }
 
     try {
-      await addTransaction('entrada', {
+      await addTransaction('income', {
         category: formState.category.trim(),
-        amountInCents: Math.round(amount),
+        value: Math.round(amount),
         date: formState.date,
         description: formState.description.trim(),
         account: formState.account.trim()

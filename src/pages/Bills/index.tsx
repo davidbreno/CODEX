@@ -23,7 +23,7 @@ export default function Bills() {
       if (transaction) {
         setFeedback({
           type: 'success',
-          message: `Conta paga e transação de saída criada (${formatCurrency(transaction.amountInCents)}).`
+          message: `Conta paga e transação de saída criada (${formatCurrency(transaction.value)}).`
         });
       } else {
         setFeedback({ type: 'success', message: 'Conta já estava marcada como paga.' });
@@ -74,7 +74,7 @@ export default function Bills() {
                   return (
                     <tr key={bill.id} className="transition hover:bg-slate-50">
                       <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-700">{bill.description}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatCurrency(bill.amountInCents)}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatCurrency(bill.value)}</td>
                       <td className="whitespace-nowrap px-4 py-3 text-slate-600">{formatDate(bill.dueDate)}</td>
                       <td className="px-4 py-3">
                         <span

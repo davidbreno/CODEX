@@ -8,8 +8,11 @@ import {
   useState,
   type ReactNode
 } from 'react';
-import type { Bill, Transaction, TransactionFormInput, TransactionKind } from '../types/finance';
+import type { Bill, Transaction, TransactionType } from '../types/finance';
+import type { Bill, Transaction, TransactionDraft, TransactionType } from '../types/finance';
 import { createId } from '../utils/format';
+
+type NewTransactionInput = Omit<Transaction, 'id' | 'type' | 'createdAt' | 'updatedAt'>;
 
 interface FinanceState {
   transactions: Transaction[];
@@ -18,34 +21,50 @@ interface FinanceState {
 
 type FinanceAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
-  | { type: 'MARK_BILL_PAID'; payload: { billId: string; transaction?: Transaction } };
+  | {
+      type: 'MARK_BILL_PAID';
+      payload: { billId: string; paidAt: string; transaction?: Transaction };
+    };
+  | { type: 'MARK_BILL_PAID'; payload: { billId: string; transaction?: Transaction; paidAt?: string } };
+
+const DEMO_USER_ID = 'demo-user';
 
 const initialState: FinanceState = {
   transactions: [],
   bills: [
     {
       id: 'bill-1',
+      userId: DEMO_USER_ID,
       description: 'Energia Elétrica',
-      amountInCents: 18990,
+      value: 18990,
       dueDate: dayjs().add(3, 'day').format('YYYY-MM-DD'),
       status: 'pending',
-      account: 'Conta Principal'
+      account: 'Conta Principal',
+      createdAt: dayjs().subtract(15, 'day').toISOString(),
+      updatedAt: dayjs().subtract(15, 'day').toISOString()
     },
     {
       id: 'bill-2',
+      userId: DEMO_USER_ID,
       description: 'Internet Fibra',
-      amountInCents: 12990,
+      value: 12990,
       dueDate: dayjs().add(5, 'day').format('YYYY-MM-DD'),
       status: 'pending',
-      account: 'Conta Principal'
+      account: 'Conta Principal',
+      createdAt: dayjs().subtract(12, 'day').toISOString(),
+      updatedAt: dayjs().subtract(12, 'day').toISOString()
     },
     {
       id: 'bill-3',
+      userId: DEMO_USER_ID,
       description: 'Assinatura Plataforma',
-      amountInCents: 5990,
+      value: 5990,
       dueDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
       status: 'paid',
-      account: 'Cartão Corporativo'
+      account: 'Cartão Corporativo',
+      createdAt: dayjs().subtract(30, 'day').toISOString(),
+      updatedAt: dayjs().subtract(1, 'day').toISOString(),
+      paidAt: dayjs().subtract(1, 'day').toISOString()
     }
   ]
 };
@@ -63,7 +82,16 @@ function financeReducer(state: FinanceState, action: FinanceAction): FinanceStat
       return {
         ...state,
         bills: state.bills.map((bill) =>
-          bill.id === action.payload.billId ? { ...bill, status: 'paid' } : bill
+          bill.id === action.payload.billId
+            ? {
+                ...bill,
+                status: 'paid',
+                paidAt: action.payload.paidAt,
+                transactionId: action.payload.transaction?.id ?? bill.transactionId
+                paidAt: action.payload.paidAt ?? bill.paidAt ?? dayjs().toISOString(),
+                updatedAt: action.payload.paidAt ?? dayjs().toISOString()
+              }
+            : bill
         ),
         transactions:
           action.payload.transaction !== undefined
@@ -79,11 +107,12 @@ interface FinanceContextValue {
   transactions: Transaction[];
   bills: Bill[];
   addTransaction: (
-    kind: TransactionKind,
-    data: TransactionFormInput
+    type: TransactionType,
+    data: NewTransactionInput
+    data: TransactionDraft
   ) => Promise<{ transaction: Transaction }>;
   markBillPaid: (billId: string) => Promise<{ transaction?: Transaction }>;
-  savingTransactionKind: TransactionKind | null;
+  savingTransactionType: TransactionType | null;
   payingBills: string[];
 }
 
@@ -91,19 +120,19 @@ const FinanceContext = createContext<FinanceContextValue | undefined>(undefined)
 
 export const FinanceProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(financeReducer, initialState);
-  const [savingTransactionKind, setSavingTransactionKind] = useState<TransactionKind | null>(null);
+  const [savingTransactionType, setSavingTransactionType] = useState<TransactionType | null>(null);
   const [payingBills, setPayingBills] = useState<string[]>([]);
 
   const addTransaction = useCallback<FinanceContextValue['addTransaction']>(
-    async (kind, data) => {
-      setSavingTransactionKind(kind);
+    async (type, data) => {
+      setSavingTransactionType(type);
 
       try {
         if (!data.category.trim()) {
           throw new Error('Informe uma categoria válida.');
         }
 
-        if (!Number.isFinite(data.amountInCents) || data.amountInCents <= 0) {
+        if (!Number.isFinite(data.value) || data.value <= 0) {
           throw new Error('O valor deve ser maior que zero.');
         }
 
@@ -115,11 +144,15 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           throw new Error('Informe uma conta.');
         }
 
+        const timestamp = new Date().toISOString();
+
         const transaction: Transaction = {
           ...data,
           id: createId(),
-          kind,
-          createdAt: new Date().toISOString()
+          type,
+          userId: DEMO_USER_ID,
+          createdAt: timestamp,
+          updatedAt: timestamp
         };
 
         await wait(350);
@@ -128,7 +161,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
 
         return { transaction };
       } finally {
-        setSavingTransactionKind(null);
+        setSavingTransactionType(null);
       }
     },
     []
@@ -150,21 +183,29 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           return { transaction: undefined };
         }
 
+        const paidAt = new Date().toISOString();
+        const timestamp = new Date().toISOString();
+
         const transaction: Transaction = {
           id: createId(),
-          kind: 'saida',
+          type: 'expense',
           category: 'Pagamento de conta',
-          amountInCents: bill.amountInCents,
+          value: bill.value,
           date: dayjs().format('YYYY-MM-DD'),
           description: `Pagamento de ${bill.description}`,
           account: bill.account,
           billId: bill.id,
-          createdAt: new Date().toISOString()
+          createdAt: paidAt,
+          updatedAt: paidAt
+          userId: bill.userId,
+          createdAt: timestamp,
+          updatedAt: timestamp
         };
 
         await wait(400);
 
-        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, transaction } });
+        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, paidAt, transaction } });
+        dispatch({ type: 'MARK_BILL_PAID', payload: { billId, transaction, paidAt: timestamp } });
 
         return { transaction };
       } finally {
@@ -180,10 +221,10 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
       bills: state.bills,
       addTransaction,
       markBillPaid,
-      savingTransactionKind,
+      savingTransactionType,
       payingBills
     }),
-    [state.transactions, state.bills, addTransaction, markBillPaid, savingTransactionKind, payingBills]
+    [state.transactions, state.bills, addTransaction, markBillPaid, savingTransactionType, payingBills]
   );
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;

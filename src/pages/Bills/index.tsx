@@ -43,6 +43,19 @@ export function ContasAPagarPage() {
   );
 
   return (
+    <main className="min-h-screen bg-slate-50 px-6 py-10">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-800">Contas a pagar</h1>
+              <p className="text-sm text-slate-600">
+                Acompanhe vencimentos, marque contas como pagas e gere a transação correspondente automaticamente.
+              </p>
+            </div>
+            <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+              {sortedBills.filter((bill) => bill.status === 'pendente').length} pendentes
+            </span>
     <section className="space-y-8">
       <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-aurora-end/20 backdrop-blur">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -95,19 +108,19 @@ export function ContasAPagarPage() {
                         <span
                           className={clsx(
                             'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold',
-                            bill.status === 'paid'
+                            bill.status === 'pago'
                               ? 'bg-emerald-50 text-emerald-600'
                               : 'bg-amber-50 text-amber-600'
                           )}
                         >
-                          {bill.status === 'paid' ? 'Paga' : 'Pendente'}
+                          {bill.status === 'pago' ? 'Paga' : 'Pendente'}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
                           className="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-emerald-300 hover:text-emerald-600 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                           onClick={() => handleMarkPaid(bill.id)}
-                          disabled={bill.status === 'paid' || isPaying}
+                          disabled={bill.status === 'pago' || isPaying}
                         >
                           {isPaying ? 'Processando...' : 'Marcar como paga'}
                         </button>

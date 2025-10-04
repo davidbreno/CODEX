@@ -8,6 +8,12 @@ import {
   useState,
   type ReactNode
 } from 'react';
+import type {
+  Bill,
+  Transaction,
+  TransactionFormInput,
+  TransactionKind
+} from '../types/finance';
 import type { Bill, Transaction, TransactionType } from '../types/finance';
 import type { Bill, Transaction, TransactionDraft, TransactionType } from '../types/finance';
 import { createId } from '../utils/format';
@@ -21,6 +27,7 @@ interface FinanceState {
 
 type FinanceAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
+  | { type: 'MARK_BILL_PAID'; payload: { billId: string; transaction?: Transaction; paidAt?: string } };
   | {
       type: 'MARK_BILL_PAID';
       payload: { billId: string; paidAt: string; transaction?: Transaction };
@@ -38,6 +45,8 @@ const initialState: FinanceState = {
       description: 'Energia Elétrica',
       value: 18990,
       dueDate: dayjs().add(3, 'day').format('YYYY-MM-DD'),
+      status: 'pendente',
+      account: 'Conta Principal'
       status: 'pending',
       account: 'Conta Principal',
       createdAt: dayjs().subtract(15, 'day').toISOString(),
@@ -49,6 +58,8 @@ const initialState: FinanceState = {
       description: 'Internet Fibra',
       value: 12990,
       dueDate: dayjs().add(5, 'day').format('YYYY-MM-DD'),
+      status: 'pendente',
+      account: 'Conta Principal'
       status: 'pending',
       account: 'Conta Principal',
       createdAt: dayjs().subtract(12, 'day').toISOString(),
@@ -60,6 +71,8 @@ const initialState: FinanceState = {
       description: 'Assinatura Plataforma',
       value: 5990,
       dueDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+      status: 'pago',
+      account: 'Cartão Corporativo'
       status: 'paid',
       account: 'Cartão Corporativo',
       createdAt: dayjs().subtract(30, 'day').toISOString(),
@@ -83,6 +96,7 @@ function financeReducer(state: FinanceState, action: FinanceAction): FinanceStat
         ...state,
         bills: state.bills.map((bill) =>
           bill.id === action.payload.billId
+            ? { ...bill, status: 'pago', paidAt: action.payload.paidAt ?? new Date().toISOString() }
             ? {
                 ...bill,
                 status: 'paid',
@@ -178,7 +192,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           throw new Error('Conta não encontrada.');
         }
 
-        if (bill.status === 'paid') {
+        if (bill.status === 'pago') {
           await wait(150);
           return { transaction: undefined };
         }
@@ -195,6 +209,7 @@ export const FinanceProvider = ({ children }: { children: ReactNode }) => {
           description: `Pagamento de ${bill.description}`,
           account: bill.account,
           billId: bill.id,
+          createdAt: timestamp
           createdAt: paidAt,
           updatedAt: paidAt
           userId: bill.userId,

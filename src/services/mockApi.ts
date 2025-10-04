@@ -2,6 +2,11 @@ import dayjs from 'dayjs';
 
 import type {
   Bill,
+  BillStatus,
+  Preferences,
+  ThemePreference,
+  Transaction,
+  User
   BillInput,
   Preferences,
   ThemePreference,
@@ -34,6 +39,10 @@ export type TransactionInput = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt
   id?: string;
 };
 
+export type BillInput = Omit<Bill, 'id' | 'status' | 'paidAt'> & {
+  id?: string;
+  status?: BillStatus;
+  paidAt?: string;
 export type BillInput = Omit<Bill, 'id' | 'status'> & {
 export type BillInput = Omit<Bill, 'id'> & {
   id?: string;
@@ -149,6 +158,7 @@ export const addBill = async (payload: BillInput): Promise<Bill> => {
   const timestamp = dayjs().toISOString();
   const bill: Bill = {
     id: payload.id ?? generateId(),
+    status: payload.status ?? 'pendente',
     ...payload,
     status: payload.status ?? 'pending',
     ...payload,
@@ -183,6 +193,7 @@ export const markBillAsPaid = async (
 
   const updated: Bill = {
     ...data.bills[index],
+    status: 'pago',
     status: 'paid',
     paidAt,
 

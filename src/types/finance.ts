@@ -28,7 +28,7 @@ export interface Transaction {
   notes?: string;
 }
 
-export type BillStatus = 'pending' | 'paid';
+export type BillStatus = 'pendente' | 'pago';
 
 export interface Bill {
   id: string;

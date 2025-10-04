@@ -96,7 +96,7 @@ export function SaidaPage() {
     }
   };
 
-  const pendingBills = bills.filter((bill) => bill.status === 'pending');
+  const pendingBills = bills.filter((bill) => bill.status === 'pendente');
 
   return (
     <section className="space-y-8">

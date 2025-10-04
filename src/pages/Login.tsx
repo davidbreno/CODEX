@@ -34,7 +34,7 @@ export function LoginPage() {
           </button>
         </form>
         <p className="text-xs text-white/60">
-          Ainda não possui conta? <Link to="/" className="text-aurora-start">Solicite acesso</Link>
+          Ainda não possui conta? <Link to="/dashboard" className="text-aurora-start">Solicite acesso</Link>
         </p>
       </div>
     </div>

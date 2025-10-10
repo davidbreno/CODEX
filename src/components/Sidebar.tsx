@@ -1,58 +1,65 @@
-import { NavLink } from 'react-router-dom';
-import clsx from 'classnames';
+import { MouseEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/entrada', label: 'Entrada' },
-  { to: '/saida', label: 'Saída' },
-  { to: '/bills', label: 'Contas a pagar' },
-  { to: '/pie', label: 'Gráfico pizza' }
-  { to: '/entrada', label: 'Income' },
-  { to: '/saida', label: 'Expenses' },
-  { to: '/bills', label: 'Bills' },
-  { to: '/pie', label: 'Spending Breakdown' },
-  { to: '/temas', label: 'Themes' },
-  { to: '/configuracoes', label: 'Settings' }
-  { to: '/dashboard/entrada', label: 'Entrada' },
-  { to: '/dashboard/saida', label: 'Saída' },
-  { to: '/dashboard/bills', label: 'Contas a pagar' },
-  { to: '/dashboard/pie', label: 'Gráfico Pizza' },
-  { to: '/dashboard/temas', label: 'Temas' },
-  { to: '/dashboard/configuracoes', label: 'Configurações' }
+const sections = [
+  { label: 'Visão geral', target: 'overview' },
+  { label: 'Entradas', target: 'incomes' },
+  { label: 'Saídas', target: 'expenses' },
+  { label: 'Relatórios', target: 'reports' }
 ];
 
-export function Sidebar() {
+export function Sidebar(): JSX.Element {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, target: string) => {
+    event.preventDefault();
+    const section = document.getElementById(target);
+
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-white/10 bg-white/5/50 px-4 py-6 backdrop-blur-lg">
-      <div className="mb-10 flex items-center gap-3 px-2">
-        <div className="h-10 w-10 rounded-2xl bg-aurora-gradient" />
-        <div>
-          <p className="text-xs uppercase tracking-widest text-white/50">Codex</p>
-          <p className="text-lg font-semibold">Finance</p>
+    <aside className="sidebar">
+      <div>
+        <div className="sidebar__brand">
+          <div className="sidebar__logo">FD</div>
+          <div>
+            <p className="sidebar__caption">Finance Suite</p>
+            <h2 className="sidebar__title">David Pro</h2>
+          </div>
+        </div>
+        <div className="sidebar__user">
+          <span>Bem-vindo,</span>
+          <strong>{user?.fullName ?? user?.username ?? 'Convidado'}</strong>
         </div>
       </div>
-      <nav className="space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/dashboard'}
-            className={({ isActive }) =>
-              clsx(
-                'flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition',
-                'text-white/70 hover:text-white hover:bg-white/10',
-                isActive && 'bg-white/10 text-white shadow-inner shadow-aurora-end/30'
-              )
-            }
+
+      <nav className="sidebar__nav">
+        {sections.map((section) => (
+          <a
+            key={section.target}
+            href={`#${section.target}`}
+            className="sidebar__link"
+            onClick={(event) => handleNavigate(event, section.target)}
           >
-            <span className="inline-flex h-2 w-2 rounded-full bg-aurora-gradient" />
-            {item.label}
-          </NavLink>
+            {section.label}
+          </a>
         ))}
       </nav>
-      <div className="mt-auto rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/60">
-        <p className="font-medium text-white">Dica</p>
-        <p>Configure alertas de fluxo de caixa para receber notificações diárias.</p>
+
+      <div className="sidebar__logout">
+        <button type="button" onClick={handleLogout}>
+          Sair da conta
+        </button>
       </div>
     </aside>
   );
